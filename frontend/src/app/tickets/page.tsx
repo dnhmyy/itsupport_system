@@ -22,12 +22,19 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
 import { useUIStore } from '@/store/ui';
-import { Ticket as TicketType } from '@/types';
+import { Asset, AssetUnit, Ticket as TicketType } from '@/types';
 import { cn } from '@/lib/utils';
 
 // ... (previous imports)
 
 type TicketStatus = TicketType['status'];
+type AssetUnitOption = AssetUnit & {
+  assetLabel: string;
+  displayName: string;
+};
+type AssetWithUnits = Asset & {
+  units?: AssetUnit[];
+};
 
 const statusOptions: TicketStatus[] = ['open', 'in_progress', 'done'];
 
@@ -67,7 +74,7 @@ function getStatusColor(status: TicketStatus) {
 }
 
 export default function TicketsPage() {
-  const { searchQuery, dateFilter } = useUIStore();
+  const { searchQuery } = useUIStore();
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -104,7 +111,7 @@ export default function TicketsPage() {
     priority: 'medium',
     asset_unit_id: '' as number | '',
   });
-  const [assetUnits, setAssetUnits] = useState<any[]>([]);
+  const [assetUnits, setAssetUnits] = useState<AssetUnitOption[]>([]);
   const [unitSearchTerm, setUnitSearchTerm] = useState('');
   const [newTicketAttachment, setNewTicketAttachment] = useState<File | null>(null);
   const [detailAttachment, setDetailAttachment] = useState<File | null>(null);
@@ -124,13 +131,13 @@ export default function TicketsPage() {
 
   const fetchAssetUnits = useCallback(async () => {
     try {
-      const { data: assetsData } = await api.get('/assets');
-      const allUnits: any[] = [];
+      const { data: assetsData } = await api.get<AssetWithUnits[]>('/assets');
+      const allUnits: AssetUnitOption[] = [];
       for (const asset of assetsData) {
         if (asset.units && asset.units.length > 0) {
-          const { data: detail } = await api.get(`/assets/${asset.id}`);
+          const { data: detail } = await api.get<AssetWithUnits>(`/assets/${asset.id}`);
           const label = [detail.brand, detail.model].filter(Boolean).join(' ');
-          detail.units.forEach((u: any) => {
+          detail.units?.forEach((u) => {
             allUnits.push({ ...u, assetLabel: label, displayName: u.name || u.serial_number || `Unit #${u.id}` });
           });
         }

@@ -7,9 +7,6 @@ import {
   HardDrive, 
   MoreVertical,
   CheckCircle2,
-  XCircle,
-  Clock,
-  Wrench,
   Calendar,
   ShieldCheck,
   X,
@@ -17,10 +14,8 @@ import {
   Monitor,
   Laptop,
   Smartphone,
-  Server,
   Network,
   Printer,
-  MousePointer2,
   Keyboard,
   Cpu,
   Tv,
@@ -30,9 +25,13 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
-import { Asset } from '@/types';
+import { Asset, AssetUnit, Ticket } from '@/types';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+
+type EditableAssetUnit = AssetUnit & {
+  specification?: string;
+};
 
 function getAssetDisplayName(asset: Asset) {
   return [asset.brand, asset.model].filter(Boolean).join(' ') || `Asset #${asset.id}`;
@@ -60,12 +59,12 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
   const [asset, setAsset] = useState<Asset | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingUnit, setEditingUnit] = useState<any | null>(null);
+  const [editingUnit, setEditingUnit] = useState<EditableAssetUnit | null>(null);
   const [actionMenuOpenFor, setActionMenuOpenFor] = useState<number | null>(null);
   
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [historyUnit, setHistoryUnit] = useState<any | null>(null);
-  const [historyTickets, setHistoryTickets] = useState<any[]>([]);
+  const [historyUnit, setHistoryUnit] = useState<EditableAssetUnit | null>(null);
+  const [historyTickets, setHistoryTickets] = useState<Ticket[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   
   const [unitForm, setUnitForm] = useState({
@@ -111,7 +110,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
     setShowAddModal(true);
   };
 
-  const handleOpenEditUnit = (unit: any) => {
+  const handleOpenEditUnit = (unit: EditableAssetUnit) => {
     setEditingUnit(unit);
     setUnitForm({
       name: unit.name || '',
@@ -150,7 +149,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const handleOpenHistory = async (unit: any) => {
+  const handleOpenHistory = async (unit: EditableAssetUnit) => {
     setHistoryUnit(unit);
     setShowHistoryModal(true);
     setLoadingHistory(true);
@@ -189,16 +188,6 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
   }
 
   if (!asset) return <div>Asset not found.</div>;
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'available': return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
-      case 'used': return <Wrench className="h-4 w-4 text-emerald-600" />;
-      case 'repair': return <Wrench className="h-4 w-4 text-orange-500" />;
-      case 'broken': return <XCircle className="h-4 w-4 text-red-500" />;
-      default: return <Clock className="h-4 w-4 text-slate-400" />;
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -520,7 +509,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                   </div>
                 ) : historyTickets.length > 0 ? (
                   <div className="space-y-4">
-                    {historyTickets.map((ticket: any) => (
+                    {historyTickets.map((ticket) => (
                       <div key={ticket.id} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-2">
                          <div className="flex items-start justify-between">
                             <div>

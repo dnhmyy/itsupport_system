@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { 
   Plus, 
   Monitor, 
@@ -14,12 +14,10 @@ import {
   Clock,
   AlertCircle,
   X,
-  RotateCw,
   Eye,
   Play,
   Pencil,
-  Trash2,
-  BarChart3
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
@@ -27,11 +25,12 @@ import { useUIStore } from '@/store/ui';
 import { MonitoringHost } from '@/types';
 import { cn } from '@/lib/utils';
 import PageGate from '@/components/PageGate';
+import axios from 'axios';
 
 // ... (previous icons)
 
 export default function MonitoringPage() {
-  const { searchQuery, dateFilter } = useUIStore();
+  const { searchQuery } = useUIStore();
   const [hosts, setHosts] = useState<MonitoringHost[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -172,9 +171,11 @@ export default function MonitoringPage() {
         setEditingHost(null);
         await fetchHosts();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update host', error);
-      const msg = error.response?.data?.message || 'Gagal menyimpan perubahan.';
+      const msg = axios.isAxiosError(error)
+        ? error.response?.data?.message || 'Failed to save changes.'
+        : 'Failed to save changes.';
       alert(`Error: ${msg}`);
     }
   };
@@ -572,7 +573,12 @@ export default function MonitoringPage() {
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Type</label>
                     <select
                       value={editHostData.type}
-                      onChange={(e) => setEditHostData((prev) => ({ ...prev, type: e.target.value as any }))}
+                      onChange={(e) =>
+                        setEditHostData((prev) => ({
+                          ...prev,
+                          type: e.target.value as typeof prev.type,
+                        }))
+                      }
                       className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
                     >
                       <option value="server">Server</option>

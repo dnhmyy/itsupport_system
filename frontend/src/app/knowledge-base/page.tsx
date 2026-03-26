@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
-import { BookOpenText, Search, ChevronRight, ArrowRight, Clock3 } from 'lucide-react';
+import { Search, ChevronRight, ArrowRight, Clock3 } from 'lucide-react';
 import { getLatestDocuments, getPopularDocuments, knowledgeDocuments, knowledgeGroups } from '@/data/knowledge-base';
 
 export default function KnowledgeBasePage() {

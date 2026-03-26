@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
@@ -76,7 +76,7 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, []);
 
-  const filterByDate = (dateStr: string) => {
+  const filterByDate = useCallback((dateStr: string) => {
     if (dateFilter === 'all') return true;
     const date = new Date(dateStr);
     const now = new Date();
@@ -89,7 +89,7 @@ export default function DashboardPage() {
     if (dateFilter === '7days') return diffDays <= 7;
     if (dateFilter === '30days') return diffDays <= 30;
     return true;
-  };
+  }, [dateFilter]);
 
   const filteredHosts = useMemo(() => {
     return allHosts.filter(h => {

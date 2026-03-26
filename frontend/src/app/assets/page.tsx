@@ -6,20 +6,15 @@ import {
   Search,
   Database,
   MoreVertical,
-  Filter,
   HardDrive,
   ChevronRight,
   Monitor,
   Laptop,
   Smartphone,
-  Server,
   Network,
   Printer,
-  MousePointer2,
   Keyboard,
   Cpu,
-  RefreshCcw,
-  Zap,
   Tv,
   Camera,
   Layers,
@@ -29,6 +24,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
 import { Asset } from '@/types';
 import { cn } from '@/lib/utils';
+
+type AssetType = 'laptop' | 'smartphone' | 'monitor' | 'mini_pc' | 'pc' | 'printer' | 'mouse_keyboard' | 'router' | 'switch' | 'cctv' | 'tv';
 
 function getIconByType(type: string) {
   switch (type) {
@@ -61,7 +58,7 @@ export default function AssetsPage() {
   const [actionMenuOpenFor, setActionMenuOpenFor] = useState<number | null>(null);
 
   const [assetForm, setAssetForm] = useState({
-    type: 'pc',
+    type: 'pc' as AssetType,
     brand: '',
     model: '',
     specification: ''
@@ -111,7 +108,7 @@ export default function AssetsPage() {
   const handleOpenEditModal = (asset: Asset) => {
     setEditingAsset(asset);
     setAssetForm({
-      type: asset.type as any,
+      type: asset.type as AssetType,
       brand: asset.brand,
       model: asset.model || '',
       specification: asset.specification || ''
@@ -356,7 +353,7 @@ export default function AssetsPage() {
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Type</label>
                       <select
                         value={assetForm.type}
-                        onChange={e => setAssetForm({ ...assetForm, type: e.target.value })}
+                        onChange={e => setAssetForm({ ...assetForm, type: e.target.value as AssetType })}
                         className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
                       >
                         <option value="pc">PC</option>
