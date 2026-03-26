@@ -1,52 +1,141 @@
 # IT Support Management System
 
-Sistem manajemen IT internal lengkap dengan Monitoring, Manajemen Aset, Ticketing, dan Penyimpanan Kredensial yang aman.
+This project is an internal IT support platform for handling day-to-day operational work. It includes monitoring, asset management, ticketing, audit logs, and a help center for end users.
 
-## 🚀 Cara Menjalankan
+The repository is organized as a small monorepo:
+- `backend/` for the Laravel API
+- `frontend/` for the Next.js application
+- `docker/` for the Nginx setup
 
-Sistem ini sudah menggunakan Docker, sehingga Anda bisa menjalankan seluruh stack (Backend, Frontend, Database, Redis) dengan satu perintah:
+## Stack
+
+- Backend: Laravel 11
+- Frontend: Next.js 14
+- Database: MySQL for Docker deployment, SQLite for local testing if needed
+- Reverse proxy: Nginx
+- Authentication: Laravel Sanctum with cookie-based access flow
+
+## Main Features
+
+- Infrastructure and host monitoring
+- Asset and device unit management
+- Ticketing for incidents and requests
+- Audit logs for important actions
+- User guide center for non-technical users
+- Basic account settings and password update
+
+## Running the Project
+
+There are two common ways to run this project:
+- Docker, which is the main deployment path
+- Local development, where backend and frontend are started separately
+
+### Docker
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
-Setelah dijalankan:
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **API Backend**: [http://localhost:8000](http://localhost:8000)
+Default service endpoints:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
 
-## 📁 Struktur Folder
+For Docker-based deployment, the main configuration file is the root `.env`.
 
-- `/backend`: API menggunakan Laravel 11.
-- `/frontend`: Interface menggunakan Next.js 14.
-- `/docker`: Konfigurasi infrastruktur (Nginx).
+### Local development
 
-### Struktur Repo yang Disarankan
+Backend:
 
-Folder berikut adalah source of truth dan aman untuk dipush:
+```bash
+cd backend
+php artisan serve
+```
 
-- `backend/app`, `backend/config`, `backend/database`, `backend/routes`, `backend/tests`
-- `frontend/src`
-- `docker`
+Frontend:
 
-Folder/file berikut bersifat lokal / generated dan tidak boleh masuk GitHub:
+```bash
+cd frontend
+npm run dev
+```
+
+Default local endpoints:
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+
+## Environment
+
+The project currently uses these environment files:
+- root `.env`: for Docker and deployment
+- `backend/.env`: for running Laravel locally without Docker
+- `frontend/.env.local`: for running Next.js locally without Docker
+
+If you deploy with Docker, the root `.env` is the main file you need to update.
+
+Typical production values include:
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://your-domain`
+- `FRONTEND_URL=https://your-domain`
+- `NEXT_PUBLIC_API_URL=https://your-domain/api`
+- `CORS_ALLOWED_ORIGINS=https://your-domain`
+- `MYSQL_DATABASE=...`
+- `MYSQL_USERNAME=...`
+- `MYSQL_ROOT_PASSWORD=...`
+- `APP_KEY=...`
+- `PAGE_GATE_PIN_HASH=...`
+- `SESSION_SECURE_COOKIE=true`
+
+## Folder Structure
+
+- `backend/`: Laravel API, database migrations, application logic
+- `frontend/`: Next.js app, UI components, pages, client-side state
+- `docker/`: Nginx configuration used by Docker
+- `docker-compose.yml`: service orchestration for Docker
+- `.env`: deployment environment for Docker
+
+## Notes on Authentication and Access
+
+- Users authenticate through the backend and access the frontend through the same system domain setup
+- Some pages, such as monitoring, use an additional page gate PIN
+- Access to sensitive sections depends on role-based restrictions
+
+## Deployment Notes
+
+Before deploying:
+- make sure the root `.env` is complete
+- use a real production domain in `APP_URL`, `FRONTEND_URL`, and `NEXT_PUBLIC_API_URL`
+- enable secure cookies in production
+- do not reuse local testing secrets
+- make sure your reverse proxy and DNS are already pointed to the correct host
+
+To start the full stack:
+
+```bash
+docker compose up -d --build
+```
+
+To stop it:
+
+```bash
+docker compose down
+```
+
+If this is the first deployment, run the required backend setup inside the backend container, for example migrations and any initial seeding you actually need.
+
+## Repository Notes
+
+Local and generated files should not be pushed to GitHub, for example:
 
 - `backend/.env`
 - `frontend/.env.local`
 - `backend/database/database.sqlite`
 - `backend/storage/logs/*`
-- `backend/storage/framework/views/*`
 - `frontend/.next`
 - `frontend/node_modules`
 - `backend/vendor`
-- `frontend/.git`
 
-## 🔑 Konfigurasi (.env)
+Before pushing to a public repository, make sure secrets, local databases, logs, and backup files are not committed.
 
-Pastikan Anda menyalin file `.env.example` menjadi `.env` di folder `backend/` dan `frontend/` sebelum menjalankan container (atau sesuaikan langsung di `docker-compose.yml`).
+## Current Scope
 
-## 🛠️ Fitur Utama
-
-1. **Monitoring**: Cek status server, Docker, dan jaringan secara real-time.
-2. **Asset Management**: Pendataan unit fisik, spesifikasi, dan garansi.
-3. **Ticketing**: Sistem keluhan IT dengan prioritas dan log aktivitas.
-4. **Credential Manager**: Brankas kata sandi terenkripsi dengan audit log akses.
+This repository is intended for internal IT support workflows. It is not meant to expose local development data, temporary credentials, debug files, or machine-specific environment files.
