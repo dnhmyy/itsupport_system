@@ -1,0 +1,35 @@
+# Frontend Dockerfile - Next.js
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies first (for better caching)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and build
+COPY . .
+RUN npm run build
+
+# Runner stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+# Copy build output and static files
+COPY --from=builder /app/next.config.mjs ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+RUN npm prune --omit=dev \
+    && addgroup -S nextjs \
+    && adduser -S nextjs -G nextjs
+
+USER nextjs
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

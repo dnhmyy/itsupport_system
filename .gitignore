@@ -1,0 +1,40 @@
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.log
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+.env*
+.env.local
+.env.*.local
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+
+# Build outputs
+.next/
+dist/
+build/
+storage/*.key
+frontend/.next/
+backend/public/build/
+backend/storage/logs/*.log
+backend/storage/framework/views/*.php
+backend/database/*.sqlite
+
+# Docker
+db_data/
+
+# Nested repo metadata and local artifacts
+frontend/.git
+*.backup
+*.local-backup
+*_local_backup/
