@@ -10,6 +10,11 @@ services:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build:
@@ -40,9 +45,8 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     depends_on:
-      - db
-    volumes:
-      - ./backend:/var/www
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -60,14 +64,13 @@ services:
       - backend
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.nginx
     container_name: it-support-nginx
     restart: always
     ports:
       - "8000:80"
-    volumes:
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./backend:/var/www
     depends_on:
       - backend
 
