@@ -288,7 +288,7 @@ export default function TicketsPage() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition-all hover:opacity-90 active:scale-95"
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
         >
           <Plus className="h-4 w-4" />
           New Ticket
@@ -296,9 +296,9 @@ export default function TicketsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.96)_100%)] p-5 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+            <div className="rounded-2xl bg-[var(--primary-soft)] p-3 text-primary">
               <AlertCircle className="h-5 w-5" />
             </div>
             <div className="space-y-1">
@@ -310,15 +310,15 @@ export default function TicketsPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Total</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.total}</p>
           </div>
-          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">In progress</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.inProgress}</p>
           </div>
-          <div className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
+          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Done</p>
             <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.done}</p>
           </div>
@@ -344,7 +344,7 @@ export default function TicketsPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -417,7 +417,7 @@ export default function TicketsPage() {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleOpenTicket(ticket.id)}
-                        className="rounded-xl p-2 text-slate-400 hover:bg-white hover:text-emerald-600 hover:shadow-sm transition-all"
+                        className="rounded-xl p-2 text-slate-400 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
                       >
                         <ArrowUpRight className="h-5 w-5" />
                       </button>
@@ -453,7 +453,7 @@ export default function TicketsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
               onAnimationStart={() => fetchAssetUnits()}
             >
               <div className="p-8">
@@ -474,7 +474,7 @@ export default function TicketsPage() {
                       required
                       value={newTicket.title}
                       onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       placeholder="e.g. Internet connection on floor 2 is down"
                     />
                   </div>
@@ -490,7 +490,7 @@ export default function TicketsPage() {
                           className={cn(
                             'flex-1 rounded-xl border py-2 text-[10px] font-black uppercase tracking-wider transition-all',
                             newTicket.priority === priority
-                              ? 'bg-primary border-primary text-white shadow-md shadow-emerald-900/20'
+                              ? 'bg-primary border-primary text-white shadow-md shadow-[rgba(21,104,187,0.18)]'
                               : 'bg-white border-slate-100 text-slate-500 hover:bg-slate-50'
                           )}
                         >
@@ -507,7 +507,7 @@ export default function TicketsPage() {
                       rows={4}
                       value={newTicket.description}
                       onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       placeholder="Provide detailed context, impact, and symptoms..."
                     />
                   </div>
@@ -531,7 +531,7 @@ export default function TicketsPage() {
                     <input
                       value={unitSearchTerm}
                       onChange={(e) => setUnitSearchTerm(e.target.value)}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       placeholder="Search unit name or serial number..."
                     />
                     {unitSearchTerm && !newTicket.asset_unit_id && (
@@ -551,7 +551,7 @@ export default function TicketsPage() {
                                 setNewTicket({ ...newTicket, asset_unit_id: u.id });
                                 setUnitSearchTerm(`${u.assetLabel} — ${u.displayName} (${u.branch || 'HO'})`);
                               }}
-                              className="flex w-full items-center justify-between px-3 py-2 text-left text-xs hover:bg-emerald-50 transition-colors border-b border-slate-50 last:border-0"
+                              className="flex w-full items-center justify-between border-b border-slate-50 px-3 py-2 text-left text-xs transition-colors hover:bg-[var(--primary-soft)] last:border-0"
                             >
                               <div>
                                 <p className="font-bold text-slate-700">{u.displayName}</p>
@@ -578,7 +578,7 @@ export default function TicketsPage() {
                     )}
                   </div>
 
-                  <div className="flex items-start gap-2 rounded-xl bg-emerald-50 p-3 text-[11px] text-emerald-600">
+                  <div className="flex items-start gap-2 rounded-xl border border-[var(--border)] bg-[rgba(220,236,255,0.45)] p-3 text-[11px] text-primary">
                     <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                     <p>Ticket baru akan membuat notifikasi ke admin dan technician. Update status dan progress setelah ticket dibuka akan mengirim notifikasi ke requester dan assignee.</p>
                   </div>
@@ -594,7 +594,7 @@ export default function TicketsPage() {
                     <button
                       type="submit"
                       disabled={creatingTicket}
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 hover:opacity-90 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {creatingTicket ? 'Submitting...' : 'Submit Ticket'}
                     </button>

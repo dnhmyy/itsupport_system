@@ -56,16 +56,16 @@ export default function KnowledgeBasePage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <section className="rounded-[2rem] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.96)_100%)] p-6 shadow-sm">
         <div className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-600">Guides</p>
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">Guides</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">IT Help Center</h1>
           <p className="mt-3 text-sm leading-6 text-slate-500">
             Find quick solutions to common issues without creating a ticket.
           </p>
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-[1.6rem] border border-slate-200 bg-slate-50 px-5 py-4">
+        <div className="mt-6 flex items-center gap-3 rounded-[1.6rem] border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-4">
           <Search className="h-5 w-5 text-slate-400" />
           <input
             type="text"
@@ -91,11 +91,11 @@ export default function KnowledgeBasePage() {
               onClick={() => handleCategorySelect(group.slug)}
               className={`rounded-[1.7rem] border p-5 text-left transition-all ${
                 selectedCategory === group.slug
-                  ? 'border-emerald-200 bg-emerald-50 shadow-sm'
-                  : 'border-slate-100 bg-white shadow-sm hover:border-slate-200 hover:bg-slate-50'
+                  ? 'border-[#b9d5f5] bg-[rgba(220,236,255,0.65)] shadow-sm'
+                  : 'border-[var(--border)] bg-white/90 shadow-sm hover:border-[#c7d8ee] hover:bg-[var(--surface-soft)]'
               } cursor-pointer`}
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
                 <group.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-4 text-base font-semibold text-slate-900">{group.title}</h3>
@@ -104,7 +104,7 @@ export default function KnowledgeBasePage() {
                 <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
                   {group.documents.length} articles
                 </p>
-                <span className="text-xs font-semibold text-emerald-600">
+                <span className="text-xs font-semibold text-primary">
                   {selectedCategory === group.slug ? 'Filtered' : 'View articles'}
                 </span>
               </div>
@@ -114,13 +114,13 @@ export default function KnowledgeBasePage() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+        <section className="rounded-[2rem] border border-[var(--border)] bg-white/90 p-6 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Popular Articles</p>
               <h2 className="mt-1 text-xl font-semibold text-slate-900">Most viewed</h2>
             </div>
-            <Link href="/tickets" className="text-sm font-semibold text-emerald-600 transition-colors hover:text-emerald-700">
+            <Link href="/tickets" className="text-sm font-semibold text-primary transition-colors hover:text-[var(--primary-deep)]">
               Need help?
             </Link>
           </div>
@@ -130,7 +130,7 @@ export default function KnowledgeBasePage() {
               <Link
                 key={document.slug}
                 href={`/knowledge-base/${document.slug}`}
-                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition-colors hover:bg-slate-100"
+                className="flex items-center justify-between rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-4 transition-colors hover:bg-white"
               >
                 <div>
                   <p className="text-sm font-semibold text-slate-900">{document.title}</p>
@@ -154,7 +154,7 @@ export default function KnowledgeBasePage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+        <section className="rounded-[2rem] border border-[var(--border)] bg-white/90 p-6 shadow-sm">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Latest Articles</p>
             <h2 className="mt-1 text-xl font-semibold text-slate-900">Recently added</h2>
@@ -165,7 +165,7 @@ export default function KnowledgeBasePage() {
               <Link
                 key={document.slug}
                 href={`/knowledge-base/${document.slug}`}
-                className="block rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition-colors hover:bg-slate-100"
+                className="block rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-4 transition-colors hover:bg-white"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{document.title}</p>
@@ -182,7 +182,7 @@ export default function KnowledgeBasePage() {
         </section>
       </div>
 
-      <section ref={articleListRef} className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <section ref={articleListRef} className="rounded-[2rem] border border-[var(--border)] bg-white/90 p-6 shadow-sm">
         <div className="flex flex-col gap-3 border-b border-slate-100 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Article List</p>
@@ -200,7 +200,7 @@ export default function KnowledgeBasePage() {
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 transition-colors hover:text-emerald-700"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-[var(--primary-deep)]"
             >
               View all topics
               <ArrowRight className="h-4 w-4" />
@@ -213,7 +213,7 @@ export default function KnowledgeBasePage() {
             <Link
               key={document.slug}
               href={`/knowledge-base/${document.slug}`}
-              className="rounded-[1.6rem] border border-slate-100 bg-slate-50 p-5 transition-colors hover:bg-slate-100"
+              className="rounded-[1.6rem] border border-[var(--border)] bg-[var(--surface-soft)] p-5 transition-colors hover:bg-white"
             >
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-3xl">

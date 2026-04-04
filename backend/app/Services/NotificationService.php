@@ -33,7 +33,9 @@ class NotificationService
                 'parse_mode' => 'Markdown',
             ]);
         } catch (\Exception $e) {
-            Log::error('Telegram notification failed: '.$e->getMessage());
+            Log::error('Telegram notification failed.', [
+                'exception' => $e::class,
+            ]);
         }
     }
 
@@ -50,7 +52,9 @@ class NotificationService
                 'content' => $message,
             ]);
         } catch (\Exception $e) {
-            Log::error('Discord notification failed: '.$e->getMessage());
+            Log::error('Discord notification failed.', [
+                'exception' => $e::class,
+            ]);
         }
     }
 

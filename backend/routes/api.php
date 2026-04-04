@@ -54,8 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //  RESTRICTED: Admin & Technician only
     // ──────────────────────────────────────────────
 
-    // Monitoring System — restricted to admin only
-    Route::middleware('role:admin')->group(function () {
+    // Monitoring System — restricted to admin & technician
+    Route::middleware('role:admin,technician')->group(function () {
         Route::get('monitoring/check-all', [MonitoringController::class, 'checkAll'])->middleware('throttle:monitoring-check');
         Route::post('monitoring/check-all', [MonitoringController::class, 'checkAll'])->middleware('throttle:monitoring-check');
         Route::post('monitoring/{monitoring}/check', [MonitoringController::class, 'check'])->middleware('throttle:monitoring-check');

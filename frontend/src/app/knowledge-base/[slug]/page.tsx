@@ -30,7 +30,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
         <div className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
           <Link href="/" className="transition-colors hover:text-slate-700">Dashboard</Link>
           <ChevronRight className="h-4 w-4" />
@@ -40,7 +40,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         </div>
 
         <div className="mt-5 flex items-start gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--primary-soft)] text-primary">
             <BookOpenText className="h-5 w-5" />
           </div>
           <div>
@@ -51,7 +51,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
               <ArrowLeft className="h-4 w-4" />
               Back to Guides
             </Link>
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-600">{document.category}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">{document.category}</p>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{document.title}</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500">{document.summary}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-500">
@@ -74,7 +74,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-slate-900">Issue Summary</h2>
         <p className="mt-3 text-sm leading-7 text-slate-600">
           {document.summary} Ikuti langkah-langkah di bawah ini terlebih dahulu. Kalau masalah masih berlanjut setelah semua langkah dicoba,
@@ -82,12 +82,12 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         </p>
       </div>
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-slate-900">Step-by-step Guide</h2>
         <div className="mt-6 space-y-4">
           {document.steps.map((step, index) => (
-            <div key={step} className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+            <div key={step} className="flex items-start gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                 {index + 1}
               </div>
               <p className="pt-1 text-sm leading-6 text-slate-700">{step}</p>
@@ -97,12 +97,12 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
       </div>
 
       {document.notes && document.notes.length > 0 && (
-        <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Extra Tips / Troubleshooting</h2>
           <div className="mt-5 space-y-3">
             {document.notes.map((note) => (
-              <div key={note} className="flex items-start gap-3 rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-slate-700">
-                <CircleCheckBig className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <div key={note} className="flex items-start gap-3 rounded-2xl border border-[var(--border)] bg-[rgba(220,236,255,0.45)] px-4 py-3 text-sm text-slate-700">
+                <CircleCheckBig className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <p>{note}</p>
               </div>
             ))}
@@ -110,7 +110,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         </div>
       )}
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-slate-900">Still need help?</h2>
         <p className="mt-3 text-sm leading-6 text-slate-500">
           {document.helpText}
@@ -119,7 +119,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/tickets"
-            className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/10 transition-all hover:opacity-90"
+            className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] transition-all hover:opacity-90"
           >
             Create an IT Support Ticket
           </Link>
@@ -132,7 +132,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-slate-900">Was this article helpful?</h2>
         <div className="mt-5 flex flex-wrap gap-3">
           <button
@@ -140,7 +140,7 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
             onClick={() => setFeedback('Yes')}
             className={`rounded-2xl px-5 py-3 text-sm font-semibold transition-colors ${
               feedback === 'Yes'
-                ? 'bg-emerald-50 text-emerald-700'
+                ? 'bg-[var(--primary-soft)] text-primary'
                 : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
             }`}
           >
@@ -161,14 +161,14 @@ export default function KnowledgeDocumentPage({ params }: { params: { slug: stri
       </div>
 
       {relatedDocuments.length > 0 && (
-        <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-[var(--border)] bg-white/92 p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900">Related Articles</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             {relatedDocuments.map((item) => (
               <Link
                 key={item.slug}
                 href={`/knowledge-base/${item.slug}`}
-                className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4 transition-colors hover:bg-slate-100"
+                className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-4 transition-colors hover:bg-white"
               >
                 <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-500">{item.summary}</p>

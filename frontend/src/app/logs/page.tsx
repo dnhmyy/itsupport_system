@@ -48,7 +48,7 @@ export default function LogsPage() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-100 bg-white overflow-hidden shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50/50 text-xs font-bold uppercase tracking-wider text-slate-500">

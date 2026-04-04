@@ -4,19 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\AssetUnit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AssetUnitController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = Validator::make($request->query(), [
+            'asset_id' => 'sometimes|integer|exists:assets,id',
+            'status' => 'sometimes|in:available,used,broken,repair',
+        ])->validate();
+
         $query = AssetUnit::with('asset', 'assignedTo');
 
-        if ($request->has('asset_id')) {
-            $query->where('asset_id', $request->asset_id);
+        if (array_key_exists('asset_id', $validated)) {
+            $query->where('asset_id', $validated['asset_id']);
         }
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+        if (array_key_exists('status', $validated)) {
+            $query->where('status', $validated['status']);
         }
 
         return response()->json($query->get());

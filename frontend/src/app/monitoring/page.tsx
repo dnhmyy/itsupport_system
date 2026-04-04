@@ -218,7 +218,7 @@ export default function MonitoringPage() {
           </button>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition-all hover:opacity-90 active:scale-95"
+            className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
           >
             <Plus className="h-4 w-4" />
             Add Host
@@ -238,7 +238,7 @@ export default function MonitoringPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-inner transition-all hover:shadow-md"
+              className="group relative flex flex-col rounded-2xl border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.96)_100%)] p-5 transition-all hover:shadow-md"
             >
               {/* Status Indicator Bar */}
               <div className={cn(
@@ -304,7 +304,7 @@ export default function MonitoringPage() {
                       setSelectedHost(host);
                       setShowAnalyticsModal(true);
                     }}
-                    className="flex-1 rounded-xl bg-emerald-50/50 py-2.5 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-100 active:scale-[0.98]"
+                    className="flex-1 rounded-xl bg-[var(--primary-soft)] py-2.5 text-xs font-bold text-primary transition-all hover:bg-[#cfe3fb] active:scale-[0.98]"
                   >
                     Full Analytics
                   </button>
@@ -405,7 +405,7 @@ export default function MonitoringPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+              className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
             >
               <div className="p-8">
                 <div className="flex items-center justify-between">
@@ -426,7 +426,7 @@ export default function MonitoringPage() {
                         required 
                         value={newHost.name}
                         onChange={e => setNewHost({...newHost, name: e.target.value})}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         placeholder="e.g. Main Web Server" 
                       />
                     </div>
@@ -437,7 +437,7 @@ export default function MonitoringPage() {
                         <select 
                           value={newHost.type}
                           onChange={e => setNewHost({...newHost, type: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                         >
                           <option value="server">Server</option>
                           <option value="router">Router (MikroTik)</option>
@@ -454,8 +454,8 @@ export default function MonitoringPage() {
                           required 
                           value={newHost.ip_address}
                           onChange={e => setNewHost({...newHost, ip_address: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all placeholder:text-slate-300" 
-                          placeholder={newHost.type === 'docker' ? 'e.g. 192.168.1.5' : 'e.g. 192.168.1.1'} 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all placeholder:text-slate-300" 
+                          placeholder={newHost.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'} 
                         />
                       </div>
                     </div>
@@ -467,7 +467,7 @@ export default function MonitoringPage() {
                           required 
                           value={newHost.container_name}
                           onChange={e => setNewHost({...newHost, container_name: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                           placeholder="e.g. web-app-prod" 
                         />
                       </div>
@@ -489,7 +489,7 @@ export default function MonitoringPage() {
                       <input 
                         value={newHost.username}
                         onChange={e => setNewHost({...newHost, username: e.target.value})}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         placeholder={newHost.type === 'nvr' ? 'admin' : 'root'} 
                       />
                     </div>
@@ -502,7 +502,7 @@ export default function MonitoringPage() {
                         type="password"
                         value={newHost.password}
                         onChange={e => setNewHost({...newHost, password: e.target.value})}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         placeholder="••••••••" 
                       />
                     </div>
@@ -518,7 +518,7 @@ export default function MonitoringPage() {
                     </button>
                     <button 
                       type="submit"
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 hover:opacity-90 transition-all active:scale-[0.98]"
+                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
                     >
                       Create Host
                     </button>
@@ -544,7 +544,7 @@ export default function MonitoringPage() {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+            className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
           >
             <div className="p-8">
               <div className="flex items-center justify-between">
@@ -564,7 +564,7 @@ export default function MonitoringPage() {
                     required
                     value={editHostData.name}
                     onChange={(e) => setEditHostData((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                    className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                   />
                 </div>
 
@@ -579,7 +579,7 @@ export default function MonitoringPage() {
                           type: e.target.value as typeof prev.type,
                         }))
                       }
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                     >
                       <option value="server">Server</option>
                       <option value="router">Router (MikroTik)</option>
@@ -596,8 +596,8 @@ export default function MonitoringPage() {
                       required
                       value={editHostData.ip_address}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, ip_address: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
-                      placeholder={editHostData.type === 'docker' ? 'e.g. 192.168.1.5' : '192.168.1.1'}
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      placeholder={editHostData.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'}
                     />
                   </div>
                 </div>
@@ -609,7 +609,7 @@ export default function MonitoringPage() {
                       required 
                       value={editHostData.container_name}
                       onChange={e => setEditHostData({...editHostData, container_name: e.target.value})}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                       placeholder="e.g. web-app-prod" 
                     />
                   </div>
@@ -623,7 +623,7 @@ export default function MonitoringPage() {
                     <input
                       value={editHostData.username || ''}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, username: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       placeholder={editHostData.type === 'nvr' ? 'admin' : 'root'}
                     />
                   </div>
@@ -635,7 +635,7 @@ export default function MonitoringPage() {
                       type="password"
                       value={editHostData.password || ''}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, password: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       placeholder="••••••••"
                     />
                   </div>
@@ -660,7 +660,7 @@ export default function MonitoringPage() {
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 hover:opacity-90 transition-all active:scale-[0.98]"
+                    className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
                   >
                     Save changes
                   </button>
@@ -685,7 +685,7 @@ export default function MonitoringPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
             >
               <div className="p-8">
                 <div className="flex items-center justify-between">
@@ -700,14 +700,14 @@ export default function MonitoringPage() {
 
                 <div className="mt-6 space-y-4 text-sm text-slate-600">
                   <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Status</p>
                       <p className="mt-2 text-lg font-semibold text-slate-900 capitalize">
                         {selectedHost.status}
                       </p>
                       <p className="text-xs text-slate-500">Last checked: {selectedHost.last_checked_at ? new Date(selectedHost.last_checked_at).toLocaleString() : 'Never'}</p>
                     </div>
-                    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">IP / Type</p>
                       <p className="mt-2 text-lg font-semibold text-slate-900">{selectedHost.ip_address}</p>
                       <p className="text-xs text-slate-500">Type: {selectedHost.type}</p>

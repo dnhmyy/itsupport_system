@@ -17,7 +17,7 @@ export default function SidebarWrapper({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex min-h-screen bg-[radial-gradient(circle_at_top,_#f8fbff_0%,_#f2f7f6_42%,_#eef3f2_100%)]">
+    <div className="flex min-h-screen bg-[radial-gradient(circle_at_top,_rgba(124,180,234,0.22)_0%,_transparent_28%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_42%,#e5effd_100%)]">
       <Sidebar />
       <div className="flex-1 lg:ml-[18rem]">
         <Navbar />

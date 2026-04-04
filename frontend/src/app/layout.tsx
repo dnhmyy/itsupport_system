@@ -14,8 +14,21 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "IT Support Management System",
-  description: "Secure and Scalable IT Support & Monitoring System",
+  title: "OpsCore IT Support System",
+  description: "Secure IT support, monitoring, and asset operations workspace.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
+      { url: "/apple-icon.png", type: "image/png", sizes: "1024x1024" },
+    ],
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 import AuthProvider from "@/components/layout/AuthProvider";
