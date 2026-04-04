@@ -17,6 +17,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
             'device_name' => 'nullable|string|max:100',
+            'use_token' => 'nullable|boolean',
         ]);
 
         $throttleKey = Str::lower($request->input('email')).'|'.$request->ip();
@@ -59,9 +60,23 @@ class AuthController extends Controller
             'user_agent' => substr((string) $request->userAgent(), 0, 255),
         ]);
 
-        return response()->json([
+        $responsePayload = [
             'user' => $user,
-        ])->cookie(
+            'expires_in_minutes' => (int) config('sanctum.expiration', 480),
+        ];
+
+        if ($request->boolean('use_token')) {
+            $responsePayload['token'] = $token;
+            $responsePayload['token_type'] = 'Bearer';
+        }
+
+        $response = response()->json($responsePayload, $request->boolean('use_token') ? 200 : 201);
+
+        if ($request->boolean('use_token')) {
+            return $response;
+        }
+
+        return $response->cookie(
             cookie(
                 config('session.auth_cookie', 'itsupport_access_token'),
                 $token,

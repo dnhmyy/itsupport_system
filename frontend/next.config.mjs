@@ -1,3 +1,9 @@
+const appConnectSources = ["'self'", 'https:'];
+
+if (process.env.NODE_ENV === 'development') {
+  appConnectSources.push('http://localhost:3000', 'http://localhost:8000');
+}
+
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
@@ -11,7 +17,7 @@ const securityHeaders = [
       "object-src 'none'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "connect-src 'self' https: http://localhost:3000 http://localhost:8000",
+      `connect-src ${appConnectSources.join(' ')}`,
     ].join('; '),
   },
   {

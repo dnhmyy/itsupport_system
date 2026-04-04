@@ -455,7 +455,7 @@ export default function MonitoringPage() {
                           value={newHost.ip_address}
                           onChange={e => setNewHost({...newHost, ip_address: e.target.value})}
                           className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all placeholder:text-slate-300" 
-                          placeholder={newHost.type === 'docker' ? 'e.g. 192.168.1.5' : 'e.g. 192.168.1.1'} 
+                          placeholder={newHost.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'} 
                         />
                       </div>
                     </div>
@@ -597,7 +597,7 @@ export default function MonitoringPage() {
                       value={editHostData.ip_address}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, ip_address: e.target.value }))}
                       className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
-                      placeholder={editHostData.type === 'docker' ? 'e.g. 192.168.1.5' : '192.168.1.1'}
+                      placeholder={editHostData.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'}
                     />
                   </div>
                 </div>

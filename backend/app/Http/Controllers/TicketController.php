@@ -8,11 +8,19 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = Validator::make($request->query(), [
+            'status' => 'sometimes|in:open,in_progress,done',
+            'priority' => 'sometimes|in:low,medium,high,critical',
+            'asset_unit_id' => 'sometimes|integer|exists:asset_units,id',
+        ])->validate();
+
         $user = $request->user();
         $query = Ticket::with(['creator', 'assignee', 'assetUnit', 'monitoringHost']);
 
@@ -24,16 +32,16 @@ class TicketController extends Controller
             });
         }
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
+        if (array_key_exists('status', $validated)) {
+            $query->where('status', $validated['status']);
         }
 
-        if ($request->has('priority')) {
-            $query->where('priority', $request->priority);
+        if (array_key_exists('priority', $validated)) {
+            $query->where('priority', $validated['priority']);
         }
 
-        if ($request->has('asset_unit_id')) {
-            $query->where('asset_unit_id', $request->asset_unit_id);
+        if (array_key_exists('asset_unit_id', $validated)) {
+            $query->where('asset_unit_id', $validated['asset_unit_id']);
         }
 
         return response()->json($query->latest()->get());
@@ -230,10 +238,16 @@ class TicketController extends Controller
 
         $file = $request->file('attachment');
         $path = $file->store('ticket-attachments', 'public');
+        $originalName = pathinfo((string) $file->getClientOriginalName(), PATHINFO_BASENAME);
+        $safeOriginalName = Str::limit(
+            preg_replace('/[^A-Za-z0-9._ -]/', '_', $originalName) ?: 'attachment',
+            120,
+            ''
+        );
 
         return [
             'attachment_path' => $path,
-            'attachment_original_name' => $file->getClientOriginalName(),
+            'attachment_original_name' => $safeOriginalName,
             'attachment_mime_type' => $file->getMimeType(),
         ];
     }
