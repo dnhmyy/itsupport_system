@@ -80,7 +80,7 @@ class AuthController extends Controller
             cookie(
                 config('session.auth_cookie', 'itsupport_access_token'),
                 $token,
-                (int) config('sanctum.expiration', 480),
+                0, // Session cookie — expires when browser is closed
                 '/',
                 config('session.domain'),
                 (bool) config('session.secure'),

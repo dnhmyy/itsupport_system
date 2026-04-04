@@ -64,13 +64,13 @@ export default function LoginPage() {
                 <div className="flex h-14 w-14 items-center justify-center rounded-[20px] border border-[var(--border)] bg-white p-2 shadow-[0_12px_24px_rgba(29,79,151,0.10)]">
                   <Image
                     src={logoApp}
-                    alt="IT Support System"
+                    alt="OpsCore IT Support System"
                     className="h-full w-full object-contain"
                     priority
                   />
                 </div>
                 <div>
-                  <p className="text-[1.1rem] font-black tracking-[-0.05em] text-slate-950">IT Support</p>
+                  <p className="text-[1.1rem] font-black tracking-[-0.05em] text-slate-950">OpsCore</p>
                   <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#5f7da8]">
                     IT Support System
                   </p>

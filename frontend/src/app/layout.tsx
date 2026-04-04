@@ -40,6 +40,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Preload app icon so loading screen renders it instantly */}
+        <link rel="preload" href="/icon.png" as="image" type="image/png" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <AuthProvider>
           <SidebarWrapper>
