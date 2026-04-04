@@ -55,7 +55,7 @@ export default function Sidebar() {
             />
           </div>
           <div>
-            <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">OpsCore</span>
+            <span className="text-lg font-semibold tracking-tight text-[var(--foreground)]">IT Support</span>
             <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.24em] text-[#6b89b4]">IT Support System</p>
           </div>
         </div>

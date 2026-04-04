@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "OpsCore IT Support System",
+  title: "IT Support System",
   description: "Secure IT support, monitoring, and asset operations workspace.",
   robots: {
     index: false,

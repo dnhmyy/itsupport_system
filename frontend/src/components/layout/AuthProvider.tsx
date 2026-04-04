@@ -62,7 +62,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             <div className="flex h-16 w-16 items-center justify-center rounded-[20px] border border-[var(--border)] bg-white p-3 shadow-[0_10px_24px_rgba(29,79,151,0.10)]">
               <Image
                 src={logoApp}
-                alt="OpsCore IT Support System"
+                alt="IT Support System"
                 className="h-full w-full object-contain"
                 priority
               />
