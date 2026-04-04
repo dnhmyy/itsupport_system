@@ -70,7 +70,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div>
-                  <p className="text-[1.1rem] font-black tracking-[-0.05em] text-slate-950">OpsCore</p>
+                  <p className="text-[1.7rem] font-black tracking-[-0.05em] text-slate-950">OpsCore</p>
                   <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.32em] text-[#5f7da8]">
                     IT Support System
                   </p>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-transparent text-[15px] text-[var(--foreground)] outline-none placeholder:text-[#8ca3c2]"
-                      placeholder="nama@perusahaan.com"
+                      placeholder="Masukan Email"
                     />
                   </span>
                 </label>
@@ -129,7 +129,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full bg-transparent text-[15px] text-[var(--foreground)] outline-none placeholder:text-[#8ca3c2]"
-                      placeholder="Masukkan password"
+                      placeholder="Masukkan Password"
                     />
                     <button
                       type="button"
@@ -153,8 +153,8 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-6 flex items-center justify-between border-t border-[var(--border)] pt-4 text-xs text-[#5f7da8]">
-                <span>Web login</span>
-                <span>© 2026 IT Support System</span>
+                <span>Login</span>
+                <span>© 2026 OpsCore | IT Support System</span>
               </div>
             </div>
           </div>
