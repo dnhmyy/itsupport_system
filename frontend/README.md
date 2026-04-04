@@ -1,4 +1,4 @@
-# OpsCore IT Support System Frontend
+# IT Support System Frontend
 
 ## Local development
 
