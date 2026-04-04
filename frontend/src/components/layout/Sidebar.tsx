@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Monitor, 
-  Database, 
-  Ticket, 
-  BookOpenText, 
-  History, 
+import {
+  LayoutDashboard,
+  Monitor,
+  Database,
+  Ticket,
+  BookOpenText,
+  History,
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -49,7 +49,7 @@ export default function Sidebar() {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--border)] bg-white p-2 shadow-[0_12px_24px_rgba(29,79,151,0.10)]">
             <Image
               src={logoApp}
-              alt="OpsCore IT Support System"
+              alt="IT Support System"
               className="h-full w-full object-contain"
               priority
             />
@@ -59,7 +59,7 @@ export default function Sidebar() {
             <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.24em] text-[#6b89b4]">IT Support System</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => setMobileMenuOpen(false)}
           className="flex h-10 w-10 items-center justify-center rounded-xl text-[#6b89b4] hover:bg-[var(--primary-soft)] lg:hidden"
         >
