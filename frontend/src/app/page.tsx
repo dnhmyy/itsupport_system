@@ -313,7 +313,7 @@ export default function DashboardPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Realtime overview</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Infrastructure Monitoring</h2>
             </div>
-            <div className="rounded-full bg-[#eef6f2] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+            <div className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
               Live matrix
             </div>
           </div>
@@ -332,7 +332,7 @@ export default function DashboardPage() {
                   transition={{ delay: 0.08 * index }}
                   className="flex flex-col items-center"
                 >
-                  <div className="flex h-[280px] w-full items-end justify-center gap-2 rounded-[28px] bg-slate-50/50 px-3 pb-6 pt-8 transition-colors hover:bg-white hover:shadow-inner">
+                  <div className="flex h-[280px] w-full items-end justify-center gap-2 rounded-[28px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-3 pb-6 pt-8 transition-colors hover:bg-white">
                     <div className="w-4 rounded-full bg-[#10b981]" style={{ height: totalHeight }} />
                     <div className="w-4 rounded-full bg-[#ef4444]" style={{ height: downHeight }} />
                   </div>
@@ -378,7 +378,7 @@ export default function DashboardPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {ticketPrioritySegments.map((segment) => (
-                <div key={segment.key} className="rounded-2xl bg-white/50 border border-slate-100/50 px-4 py-3 transition-all hover:bg-white hover:shadow-md hover:border-slate-200 group">
+                <div key={segment.key} className="rounded-2xl border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-3 transition-all hover:bg-white hover:shadow-md group">
                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                     <span className="h-3 w-3 rounded-full ring-2 ring-white shadow-[0_0_8px_rgba(0,0,0,0.05)] transition-transform group-hover:scale-110" style={{ backgroundColor: segment.color }} />
                     {segment.label}
@@ -397,7 +397,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr_0.95fr]">
-        <section className="card-premium">
+        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
           <div className="mb-6 flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Field activity</p>
@@ -411,7 +411,8 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex-1 overflow-y-auto pr-1">
+            <div className="space-y-3">
             {recentTickets.length > 0 ? (
               recentTickets.map((ticket: TicketType, i: number) => (
                 <motion.div
@@ -419,7 +420,7 @@ export default function DashboardPage() {
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="flex items-center gap-4 rounded-[24px] border border-slate-100/50 bg-white/50 px-4 py-4 transition-all hover:bg-white hover:shadow-md hover:border-slate-200"
+                  className="flex items-center gap-4 rounded-[24px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-4 transition-all hover:bg-white hover:shadow-md"
                   >
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${ticket.priority === 'critical'
@@ -452,35 +453,38 @@ export default function DashboardPage() {
                 </motion.div>
               ))
             ) : (
-              <div className="flex min-h-60 flex-col items-center justify-center text-slate-400">
+              <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
                 <CheckCircle2 className="mb-3 h-10 w-10 opacity-30" />
                 <p>No ticket activity yet.</p>
               </div>
             )}
+            </div>
           </div>
         </section>
 
-        <section className="card-premium">
+        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Asset status</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Unit condition</h2>
           </div>
 
-          <div className="space-y-4">
-            {assetStatusBreakdown.map((item) => (
-              <div key={item.label} className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold text-slate-700">{item.label}</span>
-                  <span className="text-slate-400">{item.value} units</span>
+          <div className="flex-1 overflow-y-auto pr-1">
+            <div className="space-y-4">
+              {assetStatusBreakdown.map((item) => (
+                <div key={item.label} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-slate-700">{item.label}</span>
+                    <span className="text-slate-400">{item.value} units</span>
+                  </div>
+                  <div className="h-3 overflow-hidden rounded-full bg-slate-100">
+                    <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }} />
+                  </div>
                 </div>
-                <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-                  <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }} />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="mt-8 rounded-[24px] bg-[#f8fbfa] p-4">
+          <div className="mt-6 rounded-[24px] border border-[var(--border)] bg-[rgba(220,236,255,0.34)] p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
                 <AlertTriangle className="h-5 w-5" />
@@ -493,16 +497,17 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="card-premium">
+        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
           <div className="mb-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Deployment map</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Assets by branch</h2>
           </div>
 
-          <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto pr-1">
+            <div className="space-y-4">
             {branchDistribution.length > 0 ? (
               branchDistribution.map((branch) => (
-                <div key={branch.branch} className="flex items-center justify-between rounded-[22px] bg-white/50 border border-slate-100/50 px-4 py-3 transition-all hover:bg-white hover:shadow-md hover:border-slate-200">
+                <div key={branch.branch} className="flex items-center justify-between rounded-[22px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-3 transition-all hover:bg-white hover:shadow-md">
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{branch.branch}</p>
                     <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{branch.value} units</p>
@@ -511,11 +516,12 @@ export default function DashboardPage() {
                 </div>
               ))
             ) : (
-              <div className="flex min-h-60 flex-col items-center justify-center text-slate-400">
+              <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
                 <Clock3 className="mb-3 h-10 w-10 opacity-30" />
                 <p>No branch distribution yet.</p>
               </div>
             )}
+            </div>
           </div>
         </section>
       </div>

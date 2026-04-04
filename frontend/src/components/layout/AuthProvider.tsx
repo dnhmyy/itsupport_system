@@ -1,8 +1,11 @@
 'use client';
 
 import { useAuthStore } from '@/store/auth';
+import Image from 'next/image';
 import { useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
+import logoApp from '@/app/icon.png';
 
 const ROLE_ACCESS_MAP: Record<string, string[]> = {
   '/monitoring': ['admin'],
@@ -15,6 +18,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const router = useRouter();
   const initializedRef = useRef(false);
+  const needsLoginRedirect = authChecked && !isAuthenticated && pathname !== '/login';
+  const needsDashboardRedirect = authChecked && isAuthenticated && pathname === '/login';
+  const isRedirecting = needsLoginRedirect || needsDashboardRedirect;
 
   useEffect(() => {
     if (initializedRef.current) {
@@ -47,35 +53,32 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
   }, [authChecked, isAuthenticated, pathname, router, user]);
 
-  if (!authChecked) {
+  if (!authChecked || isRedirecting) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-[#f7faf9] px-6">
-        <div className="w-full max-w-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] border border-emerald-100 bg-white shadow-sm">
-              <div className="grid grid-cols-2 gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
-              </div>
+      <div className="flex min-h-screen w-full items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(112,175,238,0.22)_0%,_transparent_35%),linear-gradient(180deg,#f8fbff_0%,#edf4ff_52%,#e5effd_100%)] px-4">
+        <div className="w-full max-w-xs rounded-[28px] border border-[var(--border)] bg-white/75 p-3 shadow-[0_24px_60px_rgba(29,79,151,0.14)] backdrop-blur-xl">
+          <div className="rounded-[22px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.98)_100%)] px-6 py-7">
+          <div className="flex flex-col items-center text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-[20px] border border-[var(--border)] bg-white p-3 shadow-[0_10px_24px_rgba(29,79,151,0.10)]">
+              <Image
+                src={logoApp}
+                alt="OpsCore IT Support System"
+                className="h-full w-full object-contain"
+                priority
+              />
             </div>
 
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-600/80">
-                IT Support
-              </p>
-              <h2 className="mt-1 text-[1.35rem] font-semibold tracking-tight text-slate-900">
-                Loading your workspace
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Checking your session and preparing the pages you can access.
-              </p>
-            </div>
-          </div>
+            <p className="mt-5 text-base font-semibold text-slate-950">Menyiapkan workspace</p>
+            <p className="mt-1 text-sm leading-6 text-[#5f7da8]">Sesi Anda sedang diperiksa.</p>
 
-          <div className="mt-6 overflow-hidden rounded-full bg-slate-200/80">
-            <div className="h-1.5 w-2/5 animate-pulse rounded-full bg-emerald-500" />
+            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3 py-2 text-[#4d6486] shadow-sm">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-[0.18em]">Loading</span>
+            </div>
+            <div className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-[#d9e7f8]">
+              <div className="h-full w-2/5 rounded-full bg-[linear-gradient(90deg,#4f92da_0%,#1568bb_100%)] animate-pulse" />
+            </div>
+            </div>
           </div>
         </div>
       </div>

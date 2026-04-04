@@ -199,13 +199,13 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
           <div>
             <h1 className="text-2xl font-bold text-foreground">{getAssetDisplayName(asset)}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-               <span className="font-bold border border-emerald-600/30 bg-emerald-50/50 px-2 py-0.5 rounded-lg text-emerald-600 capitalize">{asset.type} — {asset.brand} {asset.model && `(${asset.model})`}</span>
+               <span className="rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] px-2 py-0.5 font-bold text-primary capitalize">{asset.type} — {asset.brand} {asset.model && `(${asset.model})`}</span>
             </div>
           </div>
         </div>
         <button 
           onClick={handleOpenAddUnit}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition-all hover:opacity-90 active:scale-95"
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
         >
           <Plus className="h-4 w-4" />
           Add Unit
@@ -223,7 +223,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
               className="group card-premium flex flex-col justify-between overflow-visible p-4"
             >
               <div className="flex gap-4">
-                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--primary-soft)] text-primary">
                    {getIconByType(asset.type)}
                  </div>
                  
@@ -303,7 +303,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                  </span>
                  <button 
                   onClick={() => handleOpenHistory(unit)}
-                  className="text-[11px] font-bold text-emerald-600 hover:underline transition-all"
+                  className="text-[11px] font-bold text-primary hover:underline transition-all"
                  >
                     History
                  </button>
@@ -332,7 +332,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
             >
               <div className="p-8">
                 <div className="flex items-center justify-between">
@@ -357,7 +357,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                         <input 
                           value={unitForm.name}
                           onChange={e => setUnitForm({...unitForm, name: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                           placeholder="e.g. PC Kasir" 
                         />
                       </div>
@@ -370,7 +370,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                           disabled={!!editingUnit}
                           value={unitForm.quantity}
                           onChange={e => setUnitForm({...unitForm, quantity: parseInt(e.target.value) || 1})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all disabled:opacity-50" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all disabled:opacity-50" 
                         />
                       </div>
                     </div>
@@ -381,7 +381,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                         <input 
                           value={unitForm.serial_number}
                           onChange={e => setUnitForm({...unitForm, serial_number: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                           placeholder="e.g. SN12345678" 
                         />
                       </div>
@@ -390,7 +390,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                         <select 
                           value={unitForm.status}
                           onChange={e => setUnitForm({...unitForm, status: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                         >
                           <option value="available">Available</option>
                           <option value="used">Used</option>
@@ -408,7 +408,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                           required
                           value={unitForm.received_at}
                           onChange={e => setUnitForm({...unitForm, received_at: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         />
                       </div>
                       <div className="space-y-2">
@@ -417,7 +417,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                           type="date"
                           value={unitForm.warranty_expiry}
                           onChange={e => setUnitForm({...unitForm, warranty_expiry: e.target.value})}
-                          className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         />
                       </div>
                     </div>
@@ -427,7 +427,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                       <input 
                         value={unitForm.branch}
                         onChange={e => setUnitForm({...unitForm, branch: e.target.value})}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         placeholder="e.g. Head Office" 
                        />
                     </div>
@@ -438,12 +438,12 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                         rows={2}
                         value={unitForm.specification}
                         onChange={e => setUnitForm({...unitForm, specification: e.target.value})}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all" 
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
                         placeholder="SSD Upgrade, Extra RAM..." 
                       />
                     </div>
                     
-                    <div className="flex items-start gap-2 rounded-xl bg-emerald-50 p-3 text-[10px] text-emerald-600">
+                    <div className="flex items-start gap-2 rounded-xl border border-[var(--border)] bg-[rgba(220,236,255,0.45)] p-3 text-[10px] text-primary">
                        <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
                        <p>Tracking the arrival and warranty dates helps in lifecycle management and maintenance scheduling.</p>
                     </div>
@@ -459,7 +459,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                     </button>
                     <button 
                       type="submit"
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 hover:opacity-90 transition-all active:scale-[0.98]"
+                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
                     >
                       {editingUnit ? 'Update Unit' : 'Register Unit'}
                     </button>
@@ -486,7 +486,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl flex flex-col max-h-[85vh]"
+              className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
             >
               <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
                 <div>
@@ -502,7 +502,7 @@ export default function AssetUnitsPage({ params }: { params: { id: string } }) {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+              <div className="flex-1 overflow-y-auto bg-[rgba(244,248,255,0.55)] p-6">
                 {loadingHistory ? (
                   <div className="py-12 text-center text-sm font-semibold text-slate-400 animate-pulse">
                     Loading medical records...

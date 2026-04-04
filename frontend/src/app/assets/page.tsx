@@ -161,7 +161,7 @@ export default function AssetsPage() {
         </div>
         <button
           onClick={handleOpenAddModal}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/20 transition-all hover:opacity-90 active:scale-95"
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
         >
           <Plus className="h-4 w-4" />
           Add Master Asset
@@ -176,7 +176,7 @@ export default function AssetsPage() {
             placeholder="Search assets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/5 shadow-sm"
+            className="w-full rounded-xl border border-[var(--border)] bg-white/88 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-[var(--ring)] shadow-sm"
           />
         </div>
 
@@ -186,10 +186,10 @@ export default function AssetsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all border",
+                "whitespace-nowrap rounded-xl border px-4 py-2 text-xs font-bold transition-all",
                 activeTab === tab.id
-                  ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-900/10"
-                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                  ? "border-primary bg-primary text-white shadow-lg shadow-[rgba(21,104,187,0.18)]"
+                  : "bg-white/88 border-[var(--border)] text-slate-500 hover:border-[#abc9eb] hover:text-slate-700"
               )}
             >
               {tab.label}
@@ -217,7 +217,7 @@ export default function AssetsPage() {
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary-soft)] text-primary">
                       {getIconByType(asset.type)}
                     </div>
                     
@@ -258,7 +258,7 @@ export default function AssetsPage() {
 
                   <div>
                     <h3 className="text-base font-black text-foreground uppercase tracking-tight line-clamp-1">
-                      {asset.brand} <span className="text-emerald-600">{asset.model}</span>
+                      {asset.brand} <span className="text-primary">{asset.model}</span>
                     </h3>
                     <p className="mt-1 text-xs text-slate-400 line-clamp-1 italic">
                        {asset.specification || 'General specification...'}
@@ -278,14 +278,14 @@ export default function AssetsPage() {
 
                 <div className="mt-4 flex items-center justify-between border-t border-slate-50 pt-3">
                   <div className="flex items-center gap-2">
-                    <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-emerald-600 text-[10px] font-black text-white">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-black text-white">
                       {asset.units_count || 0}
                     </div>
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Units</span>
                   </div>
                   <button
                     onClick={() => window.location.href = `/assets/${asset.id}`}
-                    className="group/btn flex items-center gap-1 text-[10px] font-black text-emerald-600 uppercase tracking-tighter transition-all hover:gap-2"
+                    className="group/btn flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-tighter transition-all hover:gap-2"
                   >
                     Manage Units
                     <ChevronRight className="h-3 w-3" />
@@ -317,7 +317,7 @@ export default function AssetsPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl"
+              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
             >
               <div className="p-8">
                 <h2 className="text-xl font-bold text-foreground">
@@ -335,7 +335,7 @@ export default function AssetsPage() {
                         required
                         value={assetForm.brand}
                         onChange={e => setAssetForm({ ...assetForm, brand: e.target.value })}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                         placeholder="e.g. Asus"
                       />
                     </div>
@@ -345,7 +345,7 @@ export default function AssetsPage() {
                         required
                         value={assetForm.model}
                         onChange={e => setAssetForm({ ...assetForm, model: e.target.value })}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                         placeholder="e.g. Vivobook14"
                       />
                     </div>
@@ -354,7 +354,7 @@ export default function AssetsPage() {
                       <select
                         value={assetForm.type}
                         onChange={e => setAssetForm({ ...assetForm, type: e.target.value as AssetType })}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                       >
                         <option value="pc">PC</option>
                         <option value="mini_pc">Mini PC</option>
@@ -376,7 +376,7 @@ export default function AssetsPage() {
                         rows={3}
                         value={assetForm.specification}
                         onChange={e => setAssetForm({ ...assetForm, specification: e.target.value })}
-                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-sm outline-none focus:border-emerald-600 focus:bg-white transition-all"
+                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
                         placeholder="e.g. Core i5, 8GB RAM, SSD 256GB"
                       />
                     </div>
@@ -392,7 +392,7 @@ export default function AssetsPage() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 hover:opacity-90 transition-all active:scale-[0.98]"
+                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
                     >
                       {editingAsset ? 'Update Asset' : 'Create Asset'}
                     </button>

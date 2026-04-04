@@ -70,9 +70,9 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-6">
-        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="rounded-3xl border border-[var(--border)] bg-white/92 p-6 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+            <div className="rounded-2xl bg-[var(--primary-soft)] p-3 text-primary">
               <UserCircle2 className="h-5 w-5" />
             </div>
             <div>
@@ -88,9 +88,9 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="rounded-3xl border border-[var(--border)] bg-white/92 p-6 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+            <div className="rounded-2xl bg-[var(--primary-soft)] p-3 text-primary">
               <LockKeyhole className="h-5 w-5" />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                 required
                 value={passwordForm.current_password}
                 onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all focus:border-emerald-600 focus:bg-white"
+                className="w-full rounded-2xl border border-slate-200 bg-[var(--surface-soft)] px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:bg-white"
               />
             </div>
             <div className="space-y-2">
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                 required
                 value={passwordForm.new_password}
                 onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all focus:border-emerald-600 focus:bg-white"
+                className="w-full rounded-2xl border border-slate-200 bg-[var(--surface-soft)] px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:bg-white"
               />
             </div>
             <div className="space-y-2">
@@ -127,11 +127,11 @@ export default function SettingsPage() {
                 required
                 value={passwordForm.new_password_confirmation}
                 onChange={(e) => setPasswordForm({ ...passwordForm, new_password_confirmation: e.target.value })}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition-all focus:border-emerald-600 focus:bg-white"
+                className="w-full rounded-2xl border border-slate-200 bg-[var(--surface-soft)] px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:bg-white"
               />
             </div>
 
-            <div className="lg:col-span-3 flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+            <div className="lg:col-span-3 flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] p-4 text-sm text-slate-500">
               <p>Use a new password with at least 8 characters. Your new password will be used the next time you sign in.</p>
               {passwordMessage && (
                 <div className="flex items-center gap-2 rounded-2xl bg-emerald-50 px-4 py-3 font-medium text-emerald-700">
@@ -148,7 +148,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={savingPassword}
-                  className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/10 transition-all hover:opacity-90 disabled:opacity-60"
+                  className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] transition-all hover:opacity-90 disabled:opacity-60"
                 >
                   {savingPassword ? 'Saving Password...' : 'Save New Password'}
                 </button>

@@ -3,12 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --background: #eef3f2;
-  --foreground: #101827;
-  --primary: #00321c;
+  --background: #edf4ff;
+  --foreground: #0f1f3a;
+  --primary: #1568bb;
   --primary-foreground: #ffffff;
-  --surface: #ffffff;
-  --border: #e2e8f0;
+  --surface: rgba(255, 255, 255, 0.82);
+  --border: #c7d8ee;
+  --surface-strong: #ffffff;
+  --surface-soft: #f4f8ff;
+  --primary-soft: #dcecff;
+  --primary-muted: #7cb4ea;
+  --primary-deep: #1d4f97;
+  --ring: rgba(21, 104, 187, 0.16);
 }
 
 * {
@@ -17,7 +23,10 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background:
+    radial-gradient(circle at top, rgba(112, 175, 238, 0.24) 0%, transparent 34%),
+    radial-gradient(circle at right bottom, rgba(21, 104, 187, 0.12) 0%, transparent 32%),
+    linear-gradient(180deg, #f8fbff 0%, var(--background) 42%, #e5effd 100%);
   font-family: var(--font-geist-sans), sans-serif;
 }
 
@@ -32,15 +41,25 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-slate-200 hover:bg-slate-300;
+  background: linear-gradient(180deg, #8ebeed 0%, #1568bb 100%);
+  border-radius: 9999px;
 }
 
 @layer components {
   .glass {
-    @apply border border-white/20 bg-white/70 backdrop-blur-md;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.58);
+    backdrop-filter: blur(16px);
   }
   
   .card-premium {
-    @apply rounded-[28px] border border-white/80 bg-white/85 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)] transition-all backdrop-blur-sm hover:shadow-[0_28px_70px_rgba(15,23,42,0.1)];
+    @apply rounded-[28px] p-6 transition-all backdrop-blur-sm;
+    border: 1px solid rgba(199, 216, 238, 0.88);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(246, 250, 255, 0.92) 100%);
+    box-shadow: 0 24px 60px rgba(25, 66, 128, 0.10);
+  }
+
+  .card-premium:hover {
+    box-shadow: 0 28px 70px rgba(25, 66, 128, 0.14);
   }
 }
