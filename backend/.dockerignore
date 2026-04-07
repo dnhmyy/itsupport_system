@@ -4,10 +4,14 @@
 .env.*
 vendor
 node_modules
+.cache
+coverage
+*.log
 storage/logs
 storage/framework/cache
 storage/framework/sessions
 storage/framework/views
+storage/framework/testing
 database/*.sqlite
 tests
 README.md
