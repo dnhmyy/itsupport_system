@@ -1,4 +1,5 @@
-const appConnectSources = ["'self'", 'https:'];
+const appConnectSources = ["'self'", 'https:', 'https://cloudflareinsights.com'];
+const appScriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://static.cloudflareinsights.com'];
 
 if (process.env.NODE_ENV === 'development') {
   appConnectSources.push('http://localhost:3000', 'http://localhost:8000');
@@ -15,7 +16,7 @@ const securityHeaders = [
       "img-src 'self' data: blob:",
       "font-src 'self'",
       "object-src 'none'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      `script-src ${appScriptSources.join(' ')}`,
       "style-src 'self' 'unsafe-inline'",
       `connect-src ${appConnectSources.join(' ')}`,
     ].join('; '),
@@ -41,11 +42,24 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  compress: true,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   async headers() {
     return [
       {
         source: '/:path*',
         headers: securityHeaders,
+      },
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico|woff|woff2)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
       },
     ];
   },

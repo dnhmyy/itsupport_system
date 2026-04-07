@@ -26,7 +26,7 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'profile_icon' => ['nullable', 'string', 'max:100'],
+            'profile_icon' => ['nullable', 'string', 'max:100', 'regex:/^[A-Za-z0-9_-]+$/'],
         ]);
 
         $request->user()->update($validated);
@@ -44,7 +44,7 @@ class SettingsController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+            'new_password' => ['required', 'string', 'min:12', 'max:255', 'confirmed'],
         ]);
 
         if (! Hash::check($validated['current_password'], $request->user()->password)) {

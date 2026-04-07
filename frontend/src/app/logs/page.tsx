@@ -13,10 +13,19 @@ import PaginationControls from '@/components/ui/PaginationControls';
 
 const LOGS_PAGE_SIZE = 10;
 
+type AuditLogsResponse = {
+  data?: AuditLog[];
+  total?: number;
+  per_page?: number;
+  current_page?: number;
+  last_page?: number;
+};
+
 export default function LogsPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [serverTotal, setServerTotal] = useState(0);
 
   useEffect(() => {
     fetchLogs();
@@ -24,10 +33,20 @@ export default function LogsPage() {
 
   const fetchLogs = async () => {
     try {
-      const { data } = await api.get('/audit-logs');
-      setLogs(data);
+      const { data } = await api.get<AuditLogsResponse | AuditLog[]>('/audit-logs');
+
+      if (Array.isArray(data)) {
+        setLogs(data);
+        setServerTotal(data.length);
+        return;
+      }
+
+      setLogs(Array.isArray(data?.data) ? data.data : []);
+      setServerTotal(typeof data?.total === 'number' ? data.total : Array.isArray(data?.data) ? data.data.length : 0);
     } catch (error) {
       console.error('Failed to fetch logs', error);
+      setLogs([]);
+      setServerTotal(0);
     } finally {
       setLoading(false);
     }
@@ -42,10 +61,11 @@ export default function LogsPage() {
     return 'text-slate-600';
   };
 
+  const totalItems = serverTotal || logs.length;
   const totalPages = Math.max(1, Math.ceil(logs.length / LOGS_PAGE_SIZE));
   const paginatedLogs = useMemo(() => {
     const start = (currentPage - 1) * LOGS_PAGE_SIZE;
-    return logs.slice(start, start + LOGS_PAGE_SIZE);
+    return Array.isArray(logs) ? logs.slice(start, start + LOGS_PAGE_SIZE) : [];
   }, [logs, currentPage]);
 
   useEffect(() => {
@@ -74,7 +94,7 @@ export default function LogsPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Events</p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">{logs.length}</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{totalItems}</p>
             </div>
             <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Per Page</p>
@@ -161,7 +181,7 @@ export default function LogsPage() {
       <PaginationControls
         page={currentPage}
         totalPages={totalPages}
-        totalItems={logs.length}
+        totalItems={totalItems}
         onPageChange={setCurrentPage}
       />
     </div>

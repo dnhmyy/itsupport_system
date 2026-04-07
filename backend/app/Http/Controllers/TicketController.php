@@ -104,6 +104,7 @@ class TicketController extends Controller
     {
         $this->authorizeTicketAccess($request, $ticket);
 
+        $user = $request->user();
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
@@ -115,6 +116,12 @@ class TicketController extends Controller
             'progress_note' => 'nullable|string',
         ]);
         unset($validated['attachment']);
+
+        $isPrivileged = in_array($user->role, ['admin', 'technician'], true);
+
+        if (! $isPrivileged) {
+            unset($validated['status'], $validated['assigned_to_user_id'], $validated['progress_percentage']);
+        }
 
         $oldStatus = $ticket->status;
         $oldProgress = $ticket->progress_percentage ?? 0;
@@ -195,6 +202,10 @@ class TicketController extends Controller
     {
         $this->authorizeTicketAccess($request, $ticket);
 
+        if (! in_array($request->user()->role, ['admin', 'technician'], true) && $ticket->created_by_user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized.');
+        }
+
         if ($ticket->attachment_path) {
             Storage::disk('public')->delete($ticket->attachment_path);
         }
@@ -209,7 +220,7 @@ class TicketController extends Controller
         $this->authorizeTicketAccess($request, $ticket);
 
         $validated = $request->validate([
-            'activity' => 'required|string',
+            'activity' => 'required|string|max:5000',
         ]);
 
         $activity = TicketActivity::create([

@@ -13,13 +13,19 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://support.akhdnn.web.id";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "IT Support System",
   description: "Secure IT support, monitoring, and asset operations workspace.",
+  alternates: {
+    canonical: "/",
+  },
   robots: {
-    index: false,
-    follow: false,
-    nocache: true,
+    index: true,
+    follow: true,
+    nocache: false,
   },
   icons: {
     icon: [
@@ -39,11 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        {/* Preload app icon so loading screen renders it instantly */}
-        <link rel="preload" href="/icon.png" as="image" type="image/png" />
-      </head>
+    <html lang="id">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <AuthProvider>
           <SidebarWrapper>

@@ -108,7 +108,7 @@ class MonitoringController extends Controller
      */
     public function revealCredentials(Request $request, MonitoringHost $monitoring)
     {
-        $request->validate(['password' => 'required|string']);
+        $request->validate(['password' => 'required|string|min:8|max:255']);
 
         if (!Hash::check($request->password, $request->user()->password)) {
             return response()->json(['message' => 'Password confirmation failed.'], 422);
