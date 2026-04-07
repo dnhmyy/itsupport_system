@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Settings
     Route::get('settings', [SettingsController::class, 'index']);
+    Route::put('settings/profile', [SettingsController::class, 'updateProfile']);
     Route::put('settings/password', [SettingsController::class, 'updatePassword'])->middleware('throttle:sensitive-actions');
 
     // ──────────────────────────────────────────────

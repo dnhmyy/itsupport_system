@@ -24,8 +24,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '@/lib/axios';
 import { Asset } from '@/types';
 import { cn } from '@/lib/utils';
+import PaginationControls from '@/components/ui/PaginationControls';
 
 type AssetType = 'laptop' | 'smartphone' | 'monitor' | 'mini_pc' | 'pc' | 'printer' | 'mouse_keyboard' | 'router' | 'switch' | 'cctv' | 'tv';
+const ASSETS_PAGE_SIZE = 9;
 
 function getIconByType(type: string) {
   switch (type) {
@@ -56,6 +58,7 @@ export default function AssetsPage() {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   const [actionMenuOpenFor, setActionMenuOpenFor] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [assetForm, setAssetForm] = useState({
     type: 'pc' as AssetType,
@@ -152,31 +155,71 @@ export default function AssetsPage() {
     return matchesSearch && matchesTab;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filteredAssets.length / ASSETS_PAGE_SIZE));
+  const paginatedAssets = filteredAssets.slice(
+    (currentPage - 1) * ASSETS_PAGE_SIZE,
+    currentPage * ASSETS_PAGE_SIZE
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeTab]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Asset Inventory</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Asset Inventory</h1>
           <p className="text-slate-500">Manage master assets and physical units</p>
         </div>
         <button
           onClick={handleOpenAddModal}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
+          className="btn-primary"
         >
           <Plus className="h-4 w-4" />
           Add Master Asset
         </button>
       </div>
 
+      <section className="hero-minimal">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Assets</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Inventory</h2>
+            <p className="max-w-2xl text-sm text-slate-500">
+              Master asset list dan unit terkait dalam tampilan yang lebih ringkas.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Total</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{assets.length}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Filtered</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{filteredAssets.length}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Per Page</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{ASSETS_PAGE_SIZE}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="flex flex-col gap-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search assets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-xl border border-[var(--border)] bg-white/88 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-[var(--ring)] shadow-sm"
+            className="input-shell pl-11"
           />
         </div>
 
@@ -186,10 +229,10 @@ export default function AssetsPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "whitespace-nowrap rounded-xl border px-4 py-2 text-xs font-bold transition-all",
+                "whitespace-nowrap filter-chip",
                 activeTab === tab.id
-                  ? "border-primary bg-primary text-white shadow-lg shadow-[rgba(21,104,187,0.18)]"
-                  : "bg-white/88 border-[var(--border)] text-slate-500 hover:border-[#abc9eb] hover:text-slate-700"
+                  ? "filter-chip-active"
+                  : ""
               )}
             >
               {tab.label}
@@ -201,10 +244,10 @@ export default function AssetsPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {loading ? (
           [...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-2xl bg-white border border-slate-200 shadow-sm"></div>
+            <div key={i} className="h-48 animate-pulse rounded-[28px] border border-[var(--border)] bg-white/80 shadow-sm"></div>
           ))
-        ) :        filteredAssets && filteredAssets.length > 0 ? (
-          filteredAssets.map((asset, i) => {
+        ) : paginatedAssets && paginatedAssets.length > 0 ? (
+          paginatedAssets.map((asset, i) => {
             const branches = Array.from(new Set(asset.units?.map(u => u.branch).filter(Boolean))) || [];
             
             return (
@@ -237,7 +280,7 @@ export default function AssetsPage() {
                         </button>
 
                         {actionMenuOpenFor === asset.id && (
-                          <div className="absolute right-0 top-8 z-20 w-32 rounded-xl border border-slate-100 bg-white p-1 shadow-xl">
+                          <div className="absolute right-0 top-8 z-20 w-32 rounded-2xl border border-[var(--border)] bg-white p-1.5 shadow-xl">
                             <button 
                               onClick={() => handleOpenEditModal(asset)}
                               className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
@@ -268,7 +311,7 @@ export default function AssetsPage() {
                   {branches.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                        {branches.map((b, idx) => (
-                         <span key={idx} className="rounded bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500 border border-slate-100">
+                         <span key={idx} className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1 text-[9px] font-bold text-slate-500">
                            {b}
                          </span>
                        ))}
@@ -276,7 +319,7 @@ export default function AssetsPage() {
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-slate-50 pt-3">
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
                   <div className="flex items-center gap-2">
                     <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-primary text-[10px] font-black text-white">
                       {asset.units_count || 0}
@@ -302,6 +345,13 @@ export default function AssetsPage() {
         )}
       </div>
 
+      <PaginationControls
+        page={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredAssets.length}
+        onPageChange={setCurrentPage}
+      />
+
       {/* Asset Modal */}
       <AnimatePresence>
         {showAssetModal && (
@@ -311,16 +361,16 @@ export default function AssetsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAssetModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-slate-950/35 backdrop-blur-[3px]"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
+              className="modal-shell w-full max-w-lg"
             >
               <div className="p-8">
-                <h2 className="text-xl font-bold text-foreground">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
                   {editingAsset ? 'Edit Master Asset' : 'Add Master Asset'}
                 </h2>
                 <p className="text-sm text-slate-500">
@@ -335,7 +385,7 @@ export default function AssetsPage() {
                         required
                         value={assetForm.brand}
                         onChange={e => setAssetForm({ ...assetForm, brand: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                        className="input-shell"
                         placeholder="e.g. Asus"
                       />
                     </div>
@@ -345,7 +395,7 @@ export default function AssetsPage() {
                         required
                         value={assetForm.model}
                         onChange={e => setAssetForm({ ...assetForm, model: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                        className="input-shell"
                         placeholder="e.g. Vivobook14"
                       />
                     </div>
@@ -354,7 +404,7 @@ export default function AssetsPage() {
                       <select
                         value={assetForm.type}
                         onChange={e => setAssetForm({ ...assetForm, type: e.target.value as AssetType })}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                        className="input-shell"
                       >
                         <option value="pc">PC</option>
                         <option value="mini_pc">Mini PC</option>
@@ -376,7 +426,7 @@ export default function AssetsPage() {
                         rows={3}
                         value={assetForm.specification}
                         onChange={e => setAssetForm({ ...assetForm, specification: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                        className="input-shell"
                         placeholder="e.g. Core i5, 8GB RAM, SSD 256GB"
                       />
                     </div>
@@ -386,13 +436,13 @@ export default function AssetsPage() {
                     <button
                       type="button"
                       onClick={() => setShowAssetModal(false)}
-                      className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                      className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-200"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
+                      className="btn-primary flex-1 py-3"
                     >
                       {editingAsset ? 'Update Asset' : 'Create Asset'}
                     </button>

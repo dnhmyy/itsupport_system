@@ -16,6 +16,26 @@ class SettingsController extends Controller
                 'email' => $request->user()->email,
                 'role' => $request->user()->role,
                 'team' => 'IT Support',
+                'profile_icon' => $request->user()->profile_icon,
+                'requester_icon' => $request->user()->requester_icon,
+            ],
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'profile_icon' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $request->user()->update($validated);
+
+        return response()->json([
+            'message' => 'Profile updated successfully.',
+            'profile' => [
+                'name' => $request->user()->name,
+                'profile_icon' => $request->user()->profile_icon,
             ],
         ]);
     }

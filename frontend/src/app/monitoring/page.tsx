@@ -26,8 +26,10 @@ import { MonitoringHost } from '@/types';
 import { cn } from '@/lib/utils';
 import PageGate from '@/components/PageGate';
 import axios from 'axios';
+import PaginationControls from '@/components/ui/PaginationControls';
 
 // ... (previous icons)
+const HOSTS_PAGE_SIZE = 6;
 
 export default function MonitoringPage() {
   const { searchQuery } = useUIStore();
@@ -40,6 +42,7 @@ export default function MonitoringPage() {
   const [actionMenuOpenFor, setActionMenuOpenFor] = useState<number | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingHost, setEditingHost] = useState<MonitoringHost | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [editHostData, setEditHostData] = useState({
     name: '',
     type: 'server' as 'server' | 'router' | 'nvr' | 'docker' | 'other',
@@ -85,9 +88,23 @@ export default function MonitoringPage() {
     });
   }, [hosts, searchQuery]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredHosts.length / HOSTS_PAGE_SIZE));
+  const paginatedHosts = useMemo(() => {
+    const start = (currentPage - 1) * HOSTS_PAGE_SIZE;
+    return filteredHosts.slice(start, start + HOSTS_PAGE_SIZE);
+  }, [filteredHosts, currentPage]);
+
   useEffect(() => {
     fetchHosts();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const fetchHosts = async () => {
     try {
@@ -202,23 +219,23 @@ export default function MonitoringPage() {
   return (
     <PageGate pageKey="monitoring">
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Active Monitoring</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Active Monitoring</h1>
           <p className="text-slate-500">Real-time status of servers and network infrastructure</p>
         </div>
         <div className="flex gap-3">
           <button 
             onClick={checkAllHosts}
             disabled={refreshing}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition-all hover:bg-slate-50 active:scale-95 disabled:opacity-50"
+            className="btn-secondary disabled:opacity-50"
           >
             <RefreshCcw className={cn("h-4 w-4", refreshing && "animate-spin")} />
             Sync All
           </button>
           <button 
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
+            className="btn-primary"
           >
             <Plus className="h-4 w-4" />
             Add Host
@@ -226,19 +243,45 @@ export default function MonitoringPage() {
         </div>
       </div>
 
+      <section className="hero-minimal">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Monitoring</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Infrastructure status</h2>
+            <p className="max-w-2xl text-sm text-slate-500">
+              Status host dan perangkat jaringan dalam satu daftar.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Hosts</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{hosts.length}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Visible</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{filteredHosts.length}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Per Page</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{HOSTS_PAGE_SIZE}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {loading ? (
           [...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-2xl bg-white border border-slate-200 shadow-sm"></div>
+            <div key={i} className="h-48 animate-pulse rounded-[28px] border border-[var(--border)] bg-white/80 shadow-sm"></div>
           ))
-        ) : filteredHosts.length > 0 ? (
-          filteredHosts.map((host: MonitoringHost, i: number) => (
+        ) : paginatedHosts.length > 0 ? (
+          paginatedHosts.map((host: MonitoringHost, i: number) => (
             <motion.div
               key={host.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="group relative flex flex-col rounded-2xl border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.96)_100%)] p-5 transition-all hover:shadow-md"
+              className="group relative flex flex-col rounded-[28px] border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_100%)] p-5 transition-all hover:shadow-md"
             >
               {/* Status Indicator Bar */}
               <div className={cn(
@@ -304,7 +347,7 @@ export default function MonitoringPage() {
                       setSelectedHost(host);
                       setShowAnalyticsModal(true);
                     }}
-                    className="flex-1 rounded-xl bg-[var(--primary-soft)] py-2.5 text-xs font-bold text-primary transition-all hover:bg-[#cfe3fb] active:scale-[0.98]"
+                    className="flex-1 rounded-2xl bg-[var(--primary-soft)] py-2.5 text-xs font-bold text-primary transition-all hover:bg-[#d8e8ff] active:scale-[0.98]"
                   >
                     Full Analytics
                   </button>
@@ -314,13 +357,13 @@ export default function MonitoringPage() {
                         e.stopPropagation();
                         setActionMenuOpenFor((current) => (current === host.id ? null : host.id));
                       }}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition-all hover:bg-slate-100 active:scale-95 host-menu-trigger"
+                      className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 transition-all hover:bg-slate-100 active:scale-95 host-menu-trigger"
                       aria-label="Host actions"
                     >
                       <MoreVertical className="h-4 w-4" />
                     </button>
                     {actionMenuOpenFor === host.id && (
-                      <div className="absolute right-0 top-12 z-50 w-52 overflow-hidden rounded-2xl border border-slate-100 bg-white p-1.5 shadow-xl ring-1 ring-slate-900/5 transition-all">
+                      <div className="absolute right-0 top-12 z-50 w-52 overflow-hidden rounded-2xl border border-[var(--border)] bg-white p-1.5 shadow-xl ring-1 ring-slate-900/5 transition-all">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -390,6 +433,13 @@ export default function MonitoringPage() {
         )}
       </div>
 
+      <PaginationControls
+        page={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredHosts.length}
+        onPageChange={setCurrentPage}
+      />
+
       {/* Add Host Modal */}
       <AnimatePresence>
       {showAddModal && (
@@ -399,13 +449,13 @@ export default function MonitoringPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-slate-950/35 backdrop-blur-[3px]"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
+              className="modal-shell w-full max-w-md"
             >
               <div className="p-8">
                 <div className="flex items-center justify-between">
@@ -413,7 +463,7 @@ export default function MonitoringPage() {
                     <h2 className="text-xl font-bold text-foreground">Add Host</h2>
                     <p className="text-sm text-slate-500">Monitor a new server or device</p>
                   </div>
-                  <button onClick={() => setShowAddModal(false)} className="rounded-full p-2 hover:bg-slate-100 text-slate-400">
+                  <button onClick={() => setShowAddModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-100">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -426,7 +476,7 @@ export default function MonitoringPage() {
                         required 
                         value={newHost.name}
                         onChange={e => setNewHost({...newHost, name: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
+                        className="input-shell" 
                         placeholder="e.g. Main Web Server" 
                       />
                     </div>
@@ -437,7 +487,7 @@ export default function MonitoringPage() {
                         <select 
                           value={newHost.type}
                           onChange={e => setNewHost({...newHost, type: e.target.value})}
-                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                          className="input-shell"
                         >
                           <option value="server">Server</option>
                           <option value="router">Router (MikroTik)</option>
@@ -454,7 +504,7 @@ export default function MonitoringPage() {
                           required 
                           value={newHost.ip_address}
                           onChange={e => setNewHost({...newHost, ip_address: e.target.value})}
-                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all placeholder:text-slate-300" 
+                          className="input-shell placeholder:text-slate-300" 
                           placeholder={newHost.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'} 
                         />
                       </div>
@@ -467,7 +517,7 @@ export default function MonitoringPage() {
                           required 
                           value={newHost.container_name}
                           onChange={e => setNewHost({...newHost, container_name: e.target.value})}
-                          className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
+                          className="input-shell" 
                           placeholder="e.g. web-app-prod" 
                         />
                       </div>
@@ -489,7 +539,7 @@ export default function MonitoringPage() {
                       <input 
                         value={newHost.username}
                         onChange={e => setNewHost({...newHost, username: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
+                        className="input-shell" 
                         placeholder={newHost.type === 'nvr' ? 'admin' : 'root'} 
                       />
                     </div>
@@ -502,7 +552,7 @@ export default function MonitoringPage() {
                         type="password"
                         value={newHost.password}
                         onChange={e => setNewHost({...newHost, password: e.target.value})}
-                        className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
+                        className="input-shell" 
                         placeholder="••••••••" 
                       />
                     </div>
@@ -512,13 +562,13 @@ export default function MonitoringPage() {
                     <button 
                       type="button"
                       onClick={() => setShowAddModal(false)}
-                      className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                      className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-200"
                     >
                       Cancel
                     </button>
                     <button 
                       type="submit"
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
+                      className="btn-primary flex-1 py-3"
                     >
                       Create Host
                     </button>
@@ -538,13 +588,13 @@ export default function MonitoringPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowEditModal(false)}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-slate-950/35 backdrop-blur-[3px]"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
+            className="modal-shell w-full max-w-lg"
           >
             <div className="p-8">
               <div className="flex items-center justify-between">
@@ -552,7 +602,7 @@ export default function MonitoringPage() {
                   <h2 className="text-xl font-bold text-foreground">Edit Host</h2>
                   <p className="text-sm text-slate-500">Update the monitoring host details</p>
                 </div>
-                <button onClick={() => setShowEditModal(false)} className="rounded-full p-2 hover:bg-slate-100 text-slate-400">
+                <button onClick={() => setShowEditModal(false)} className="rounded-full p-2 text-slate-400 hover:bg-slate-100">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -564,7 +614,7 @@ export default function MonitoringPage() {
                     required
                     value={editHostData.name}
                     onChange={(e) => setEditHostData((prev) => ({ ...prev, name: e.target.value }))}
-                    className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                    className="input-shell"
                   />
                 </div>
 
@@ -579,7 +629,7 @@ export default function MonitoringPage() {
                           type: e.target.value as typeof prev.type,
                         }))
                       }
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                     >
                       <option value="server">Server</option>
                       <option value="router">Router (MikroTik)</option>
@@ -596,7 +646,7 @@ export default function MonitoringPage() {
                       required
                       value={editHostData.ip_address}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, ip_address: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder={editHostData.type === 'docker' ? 'e.g. 203.0.113.10' : 'e.g. 198.51.100.10'}
                     />
                   </div>
@@ -609,7 +659,7 @@ export default function MonitoringPage() {
                       required 
                       value={editHostData.container_name}
                       onChange={e => setEditHostData({...editHostData, container_name: e.target.value})}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all" 
+                      className="input-shell" 
                       placeholder="e.g. web-app-prod" 
                     />
                   </div>
@@ -623,7 +673,7 @@ export default function MonitoringPage() {
                     <input
                       value={editHostData.username || ''}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, username: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder={editHostData.type === 'nvr' ? 'admin' : 'root'}
                     />
                   </div>
@@ -635,7 +685,7 @@ export default function MonitoringPage() {
                       type="password"
                       value={editHostData.password || ''}
                       onChange={(e) => setEditHostData((prev) => ({ ...prev, password: e.target.value }))}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder="••••••••"
                     />
                   </div>
@@ -654,13 +704,13 @@ export default function MonitoringPage() {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                    className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98]"
+                    className="btn-primary flex-1 py-3"
                   >
                     Save changes
                   </button>
@@ -679,13 +729,13 @@ export default function MonitoringPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAnalyticsModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-slate-950/35 backdrop-blur-[3px]"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
+              className="modal-shell w-full max-w-xl"
             >
               <div className="p-8">
                 <div className="flex items-center justify-between">
@@ -693,7 +743,7 @@ export default function MonitoringPage() {
                     <h2 className="text-xl font-bold text-foreground">Host Analytics</h2>
                     <p className="text-sm text-slate-500">Realtime log/status summary for {selectedHost.name}</p>
                   </div>
-                  <button onClick={() => setShowAnalyticsModal(false)} className="rounded-full p-2 hover:bg-slate-100 text-slate-400 transition-colors">
+                  <button onClick={() => setShowAnalyticsModal(false)} className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100">
                     <X className="h-5 w-5" />
                   </button>
                 </div>

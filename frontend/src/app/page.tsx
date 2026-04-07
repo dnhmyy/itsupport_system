@@ -43,10 +43,11 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        const t = Date.now();
         const [hostsRes, assetsRes, ticketsRes] = await Promise.allSettled([
-          api.get('/monitoring'),
-          api.get('/asset-units'),
-          api.get('/tickets'),
+          api.get(`/monitoring?t=${t}`),
+          api.get(`/asset-units?t=${t}`),
+          api.get(`/tickets?t=${t}`),
         ]);
 
         if (hostsRes.status === 'fulfilled') {
@@ -74,6 +75,12 @@ export default function DashboardPage() {
     };
 
     fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 30000); // 30s auto-sync
+    window.addEventListener('focus', fetchDashboardData);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', fetchDashboardData);
+    };
   }, []);
 
   const filterByDate = useCallback((dateStr: string) => {
@@ -93,16 +100,16 @@ export default function DashboardPage() {
 
   const filteredHosts = useMemo(() => {
     return allHosts.filter(h => {
-      const matchesSearch = !searchQuery || 
-        h.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = !searchQuery ||
+        h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         h.ip_address.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSearch && filterByDate(h.created_at);
     });
-  }, [allHosts, searchQuery, dateFilter]);
+  }, [allHosts, searchQuery, filterByDate]);
 
   const filteredAssets = useMemo(() => {
     return allAssets.filter(a => {
-      const matchesSearch = !searchQuery || 
+      const matchesSearch = !searchQuery ||
         a.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         a.serial_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         a.branch?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -110,18 +117,22 @@ export default function DashboardPage() {
         (a.asset?.model?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
       return matchesSearch && filterByDate(a.created_at);
     });
-  }, [allAssets, searchQuery, dateFilter]);
+  }, [allAssets, searchQuery, filterByDate]);
 
   const filteredTickets = useMemo(() => {
     return allTickets.filter(t => {
-      const matchesSearch = !searchQuery || 
-        t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      const matchesSearch = !searchQuery ||
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSearch && filterByDate(t.created_at);
-    });
-  }, [allTickets, searchQuery, dateFilter]);
+    }).sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at));
+  }, [allTickets, searchQuery, filterByDate]);
 
-  const recentTickets = useMemo(() => filteredTickets.slice(0, 6), [filteredTickets]);
+  const recentTickets = useMemo(() => {
+    return [...allTickets]
+      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+      .slice(0, 5);
+  }, [allTickets]);
 
   // Update Stats based on filtered data
   useEffect(() => {
@@ -167,7 +178,7 @@ export default function DashboardPage() {
     // Filter out DONE tickets as requested: "sinkronkan dengan berapa tiket yang sdh selesai"
     const activeTickets = filteredTickets.filter(t => t.status !== 'done');
     const totalActive = Math.max(activeTickets.length, 0);
-    
+
     if (totalActive === 0) return [];
 
     let cumulative = 0;
@@ -212,7 +223,7 @@ export default function DashboardPage() {
         percentage: Math.round((value / total) * 100),
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 7);
+      .slice(0, 5);
   }, [filteredAssets]);
 
   const statCards = [
@@ -222,7 +233,7 @@ export default function DashboardPage() {
       trend: `${Math.round((stats.activeHosts / Math.max(stats.totalHosts, 1)) * 100)}% healthy`,
       icon: Monitor,
       tone: 'text-emerald-600',
-      bg: 'bg-emerald-50',
+      bg: 'bg-emerald-50/80',
     },
     {
       label: 'Asset inventory',
@@ -230,7 +241,7 @@ export default function DashboardPage() {
       trend: `${stats.usedAssets} in use`,
       icon: Boxes,
       tone: 'text-sky-600',
-      bg: 'bg-sky-50',
+      bg: 'bg-sky-50/80',
     },
     {
       label: 'Active incidents',
@@ -238,7 +249,7 @@ export default function DashboardPage() {
       trend: `${stats.criticalTickets} critical`,
       icon: Ticket,
       tone: 'text-orange-600',
-      bg: 'bg-orange-50',
+      bg: 'bg-orange-50/80',
     },
     {
       label: 'Assets at risk',
@@ -246,13 +257,16 @@ export default function DashboardPage() {
       trend: `${stats.downHosts} host down`,
       icon: ShieldAlert,
       tone: 'text-red-600',
-      bg: 'bg-red-50',
+      bg: 'bg-red-50/80',
     },
   ];
 
+  const activeIncidents = stats.openTickets + stats.inProgressTickets;
+  const healthyRate = Math.round((stats.activeHosts / Math.max(stats.totalHosts, 1)) * 100);
+
   const donutStyle = useMemo(() => {
     if (!ticketPrioritySegments.length) {
-      return { background: '#f0fdf9' };
+      return { background: '#f1f5f9' }; // Neutral gray-blue for empty state
     }
 
     const gradients = ticketPrioritySegments
@@ -285,120 +299,155 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <section className="hero-minimal py-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Overview</p>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900">Operational summary</h2>
+            <p className="max-w-2xl text-sm text-slate-500">
+              Ringkasan monitoring, aset, dan tiket dalam satu tampilan.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Healthy</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{healthyRate}%</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Incidents</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{activeIncidents}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">At Risk</p>
+              <p className="mt-1 text-xl font-semibold text-slate-900">{stats.brokenAssets + stats.repairAssets}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {statCards.map((stat, i) => (
           <motion.div
-            key={stat.label}
+            key={`${stat.label}-mini`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="card-premium flex items-start justify-between"
+            className="panel-soft flex items-start justify-between p-5"
           >
             <div>
               <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-              <h3 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">{stat.value}</h3>
+              <h3 className="mt-3 text-[2rem] font-semibold tracking-tight text-slate-900">{stat.value}</h3>
               <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{stat.trend}</p>
             </div>
-            <div className={`rounded-2xl p-3 ${stat.bg}`}>
+            <div className={`rounded-[20px] p-3 ${stat.bg}`}>
               <stat.icon className={`h-6 w-6 ${stat.tone}`} />
             </div>
           </motion.div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.75fr_1fr]">
-        <section className="card-premium overflow-hidden">
-          <div className="mb-8 flex items-start justify-between gap-4">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.9fr_0.9fr] xl:items-stretch">
+        <section className="card-premium flex h-[28.5rem] flex-col overflow-hidden p-6 pb-10">
+          <div className="mb-6 flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Realtime overview</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Infrastructure Monitoring</h2>
             </div>
-            <div className="rounded-full bg-[var(--primary-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
-              Live matrix
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">Live</p>
+          </div>
+
+          <div className="flex flex-1 flex-col pr-1">
+            <div className="flex-1">
+              <div className="grid grid-cols-5 gap-3">
+              {hostTypeBars.map((item, index) => {
+                const barBase = Math.max(...hostTypeBars.map((bar) => bar.total), 1);
+                const totalHeight = `${Math.max((item.total / barBase) * 110, item.total > 0 ? 18 : 8)}px`;
+                const downHeight = `${Math.max((item.down / barBase) * 110, item.down > 0 ? 16 : 8)}px`;
+
+                return (
+                  <motion.div
+                    key={item.key}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 * index }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="flex h-[140px] w-full items-end justify-center gap-2 overflow-hidden rounded-[20px] bg-[var(--surface-soft)] px-2 pb-4 pt-4">
+                      <div className="w-3.5 rounded-full bg-[#10b981]" style={{ height: totalHeight }} />
+                      <div className="w-3.5 rounded-full bg-[#ef4444]" style={{ height: downHeight }} />
+                    </div>
+                    <p className="mt-3 text-sm font-medium text-slate-700">{item.label}</p>
+                    <p className="mt-1 text-xs text-slate-400">{item.total} / {item.down}</p>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="grid grid-cols-5 gap-4">
-            {hostTypeBars.map((item, index) => {
-              const barBase = Math.max(...hostTypeBars.map((bar) => bar.total), 1);
-              const totalHeight = `${Math.max((item.total / barBase) * 220, item.total > 0 ? 24 : 12)}px`;
-              const downHeight = `${Math.max((item.down / barBase) * 220, item.down > 0 ? 20 : 10)}px`;
-
-              return (
-                <motion.div
-                  key={item.key}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08 * index }}
-                  className="flex flex-col items-center"
-                >
-                  <div className="flex h-[280px] w-full items-end justify-center gap-2 rounded-[28px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-3 pb-6 pt-8 transition-colors hover:bg-white">
-                    <div className="w-4 rounded-full bg-[#10b981]" style={{ height: totalHeight }} />
-                    <div className="w-4 rounded-full bg-[#ef4444]" style={{ height: downHeight }} />
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                    <item.icon className="h-4 w-4 text-slate-400" />
-                    <span>{item.label}</span>
-                  </div>
-                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-400">
-                    {item.total} nodes / {item.down} down
-                  </p>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="mt-12 flex flex-wrap gap-8 text-sm">
-            <div className="flex items-center gap-2 text-slate-500">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#10b981]" />
-              Total by type
-            </div>
-            <div className="flex items-center gap-2 text-slate-500">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#ef4444]" />
-              Down by type
+            <div className="mt-auto grid grid-cols-3 gap-3">
+              <div className="rounded-[18px] border border-[var(--border)] bg-slate-50 px-4 py-3.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Total Host</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900">{stats.totalHosts}</p>
+              </div>
+              <div className="rounded-[18px] border border-[var(--border)] bg-slate-50 px-4 py-3.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Healthy</p>
+                <p className="mt-2 text-2xl font-semibold text-emerald-600">{stats.activeHosts}</p>
+              </div>
+              <div className="rounded-[18px] border border-[var(--border)] bg-slate-50 px-4 py-3.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Down</p>
+                <p className="mt-2 text-2xl font-semibold text-rose-600">{stats.downHosts}</p>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="card-premium">
-          <div className="mb-6">
+        <section className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-white p-6 pb-10 shadow-[var(--shadow-soft)] flex h-[28.5rem] flex-col">
+          <div className="mb-4">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Ticket analytics</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Priority spread</h2>
           </div>
 
-          <div className="flex flex-col gap-8">
-            <div className="mx-auto flex h-56 w-56 items-center justify-center rounded-full p-5" style={donutStyle}>
+          <div className="flex flex-1 flex-col gap-4">
+            <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full border border-slate-100 p-4 shadow-[0_18px_50px_rgba(17,38,69,0.08)]" style={donutStyle}>
               <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-white text-center shadow-inner">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Active</span>
-                <span className="mt-2 text-4xl font-semibold tracking-tight text-slate-900">
+                <span className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                   {filteredTickets.filter(t => t.status !== 'done').length}
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {ticketPrioritySegments.map((segment) => (
-                <div key={segment.key} className="rounded-2xl border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-3 transition-all hover:bg-white hover:shadow-md group">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                    <span className="h-3 w-3 rounded-full ring-2 ring-white shadow-[0_0_8px_rgba(0,0,0,0.05)] transition-transform group-hover:scale-110" style={{ backgroundColor: segment.color }} />
-                    {segment.label}
+            <div className="mt-auto grid grid-cols-2 gap-3">
+              {[
+                { key: 'critical', label: 'Critical', color: '#ef4444' },
+                { key: 'high', label: 'High', color: '#f97316' },
+                { key: 'medium', label: 'Medium', color: '#f59e0b' },
+                { key: 'low', label: 'Low', color: '#10b981' },
+              ].map((priority) => {
+                const seg = ticketPrioritySegments.find(s => s.key === priority.key);
+                const value = seg?.value ?? 0;
+                const percentage = seg ? Math.round(seg.percentage) : 0;
+                return (
+                  <div key={priority.key} className="rounded-2xl border border-[var(--border)] bg-slate-50 px-4 py-3.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: priority.color }} />
+                        <span>{priority.label}</span>
+                      </div>
+                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{percentage}%</span>
+                    </div>
+                    <div className="mt-2 text-xl font-semibold tracking-tight text-slate-900">{value}</div>
                   </div>
-                  <div className="mt-2 flex items-end justify-between">
-                    <span className="text-2xl font-semibold tracking-tight text-slate-900">{segment.value}</span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                      {Math.round(segment.percentage)}%
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr_0.95fr]">
-        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
-          <div className="mb-6 flex items-start justify-between">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.15fr_0.85fr_0.95fr] xl:items-stretch">
+        <section className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-white p-6 pb-10 shadow-[var(--shadow-soft)] flex h-[28.5rem] flex-col">
+          <div className="mb-3 flex items-start justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Field activity</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Recent tickets</h2>
@@ -411,16 +460,16 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1">
-            <div className="space-y-3">
-            {recentTickets.length > 0 ? (
-              recentTickets.map((ticket: TicketType, i: number) => (
-                <motion.div
-                  key={ticket.id}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="flex items-center gap-4 rounded-[24px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-4 transition-all hover:bg-white hover:shadow-md"
+          <div className="flex-1 pr-1">
+            <div className="space-y-2">
+              {recentTickets.length > 0 ? (
+                recentTickets.map((ticket: TicketType, i: number) => (
+                  <motion.div
+                    key={ticket.id}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    className="flex items-center gap-3 rounded-[16px] border border-[var(--border)] bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-md"
                   >
                     <div
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${ticket.priority === 'critical'
@@ -430,61 +479,64 @@ export default function DashboardPage() {
                           : ticket.priority === 'medium'
                             ? 'bg-amber-100 text-amber-700'
                             : 'bg-emerald-100 text-emerald-700'
-                      }`}
+                        }`}
                     >
-                    {ticket.priority === 'critical' ? (
-                      <CircleAlert className="h-5 w-5" />
-                    ) : (
-                      <Ticket className="h-5 w-5" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-slate-900">{ticket.title}</p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {ticket.assignee?.name || ticket.creator?.name || 'Unassigned'} •{' '}
-                      {new Date(ticket.created_at).toLocaleDateString('id-ID')}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="rounded-full bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-sm">
-                      {ticket.status.replace('_', ' ')}
-                    </span>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
-                <CheckCircle2 className="mb-3 h-10 w-10 opacity-30" />
-                <p>No ticket activity yet.</p>
-              </div>
-            )}
+                      {ticket.priority === 'critical' ? (
+                        <CircleAlert className="h-5 w-5" />
+                      ) : (
+                        <Ticket className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-900">{ticket.title}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {ticket.assignee?.name || ticket.creator?.name || 'Unassigned'} •{' '}
+                        {new Date(ticket.created_at).toLocaleDateString('id-ID')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        {ticket.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
+                  <CheckCircle2 className="mb-3 h-10 w-10 opacity-30" />
+                  <p>No ticket activity yet.</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
 
-        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
-          <div className="mb-6">
+        <section className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-white p-6 pb-10 shadow-[var(--shadow-soft)] flex h-[28.5rem] flex-col">
+          <div className="mb-4">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Asset status</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Unit condition</h2>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1">
+          <div className="flex-1 pr-1">
             <div className="space-y-4">
               {assetStatusBreakdown.map((item) => (
                 <div key={item.label} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-semibold text-slate-700">{item.label}</span>
-                    <span className="text-slate-400">{item.value} units</span>
+                    <span className="text-slate-500">{item.value} units</span>
                   </div>
                   <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-                    <div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.percentage}%` }} />
+                    <div
+                      className={`h-full rounded-full ${item.color}`}
+                      style={{ width: `${Math.max(item.percentage, item.value > 0 ? 6 : 0)}%` }}
+                    />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mt-6 rounded-[24px] border border-[var(--border)] bg-[rgba(220,236,255,0.34)] p-4">
+          <div className="mt-6 rounded-[24px] border border-[var(--border)] bg-blue-50 p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
                 <AlertTriangle className="h-5 w-5" />
@@ -497,30 +549,30 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="card-premium flex h-[24rem] flex-col overflow-hidden">
-          <div className="mb-6">
+        <section className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-white p-6 pb-10 shadow-[var(--shadow-soft)] flex h-[28.5rem] flex-col">
+          <div className="mb-4">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Deployment map</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900">Assets by branch</h2>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1">
+          <div className="flex-1 pr-1">
             <div className="space-y-4">
-            {branchDistribution.length > 0 ? (
-              branchDistribution.map((branch) => (
-                <div key={branch.branch} className="flex items-center justify-between rounded-[22px] border border-[var(--border)] bg-[rgba(255,255,255,0.62)] px-4 py-3 transition-all hover:bg-white hover:shadow-md">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">{branch.branch}</p>
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{branch.value} units</p>
+              {branchDistribution.length > 0 ? (
+                branchDistribution.map((branch) => (
+                  <div key={branch.branch} className="flex items-center justify-between rounded-[22px] border border-[var(--border)] bg-slate-50 px-4 py-2.5 transition-all hover:bg-white hover:shadow-md">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">{branch.branch}</p>
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">{branch.value} units</p>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">{branch.percentage}%</span>
                   </div>
-                  <span className="text-sm font-semibold text-primary">{branch.percentage}%</span>
+                ))
+              ) : (
+                <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
+                  <Clock3 className="mb-3 h-10 w-10 opacity-30" />
+                  <p>No branch distribution yet.</p>
                 </div>
-              ))
-            ) : (
-              <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
-                <Clock3 className="mb-3 h-10 w-10 opacity-30" />
-                <p>No branch distribution yet.</p>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </section>
