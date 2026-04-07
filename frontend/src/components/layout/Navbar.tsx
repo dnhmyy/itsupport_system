@@ -7,6 +7,7 @@ import { useUIStore, DateFilter } from '@/store/ui';
 import api from '@/lib/axios';
 import { UserNotification } from '@/types';
 import { cn } from '@/lib/utils';
+import { ProfileAvatar } from '@/components/profile/ProfileAvatar';
 
 function formatTime(value: string) {
   return new Date(value).toLocaleString('id-ID', {
@@ -53,15 +54,6 @@ export default function Navbar() {
     }
 
     return `Malam ${firstName}! Last push ya 🚀`;
-  }, [user?.name]);
-
-  const initials = useMemo(() => {
-    return (user?.name || 'Guest User')
-      .split(' ')
-      .slice(0, 2)
-      .map((part) => part[0] || '')
-      .join('')
-      .toUpperCase();
   }, [user?.name]);
 
   useEffect(() => {
@@ -140,26 +132,26 @@ export default function Navbar() {
   };
 
   return (
-    <header className="relative flex w-full items-center justify-between px-8 pt-6 xl:px-10">
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-[#5f7da8]">{greeting}</p>
-        <h1 className="text-[2rem] font-semibold tracking-tight text-[var(--foreground)]">Dashboard</h1>
+    <header className="relative flex w-full flex-col gap-5 px-5 pt-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8 xl:px-10">
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-[#6b7f95]">{greeting}</p>
+        <h1 className="text-[1.65rem] font-semibold tracking-tight text-[var(--foreground)]">Dashboard</h1>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="hidden items-center gap-2 rounded-full border border-[var(--border)] bg-white/80 px-4 py-2 shadow-[0_12px_28px_rgba(29,79,151,0.08)] backdrop-blur xl:flex">
-          <Search className="h-4 w-4 text-[#7d97ba]" />
+      <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+        <div className="hidden items-center gap-2 rounded-full border border-[var(--border)] bg-white/88 px-4 py-2 xl:flex">
+          <Search className="h-4 w-4 text-[#91a0b4]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tickets, assets, hosts..."
-            className="w-72 bg-transparent text-sm text-[#33517c] outline-none placeholder:text-[#8ca3c2]"
+            className="w-72 bg-transparent text-sm text-[#31465e] outline-none placeholder:text-[#97a7bb]"
           />
         </div>
 
         <div className="relative group">
-          <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-white/80 px-4 py-2 text-sm font-medium text-[#4d6486] shadow-[0_12px_28px_rgba(29,79,151,0.08)] backdrop-blur cursor-pointer hover:bg-white transition-all">
+          <div className="flex items-center gap-2 rounded-full border border-[var(--border)] bg-white/88 px-4 py-2 text-sm font-medium text-[#5d7088] cursor-pointer hover:bg-white transition-all">
             <CalendarRange className="h-4 w-4 text-primary" />
             <span>{getDateLabel(dateFilter)}</span>
             
@@ -179,7 +171,7 @@ export default function Navbar() {
         <div className="relative">
           <button
             onClick={openNotifications}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-white/80 text-[#4d6486] shadow-[0_12px_28px_rgba(29,79,151,0.08)] backdrop-blur"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-white/88 text-[#5d7088]"
             ref={notificationButtonRef}
           >
             <Bell className="h-5 w-5" />
@@ -192,13 +184,13 @@ export default function Navbar() {
 
           {showNotifications && (
             <div
-              className="absolute right-0 top-14 z-50 w-[22rem] rounded-[1.5rem] border border-[var(--border)] bg-white p-4 shadow-[0_24px_60px_rgba(29,79,151,0.16)]"
+              className="absolute right-0 top-14 z-50 w-[22rem] rounded-[1.75rem] border border-[var(--border)] bg-white/98 p-4 shadow-[0_24px_60px_rgba(17,38,69,0.14)]"
               ref={notificationRef}
             >
               <div className="mb-4 flex items-center justify-between px-1">
                 <div>
                   <p className="text-sm font-semibold text-[var(--foreground)]">Notifications</p>
-                  <p className="text-xs text-[#5f7da8]">Updates for your account</p>
+                  <p className="text-xs text-[#6b7f95]">Updates for your account</p>
                 </div>
                 {unreadCount > 0 && (
                   <button 
@@ -219,18 +211,18 @@ export default function Navbar() {
                       className={cn(
                         'w-full rounded-2xl border px-3 py-3 text-left transition-all',
                         notification.read_at
-                          ? 'border-slate-100 bg-slate-50'
-                          : 'border-[#cfe1f7] bg-[rgba(220,236,255,0.5)]'
+                          ? 'border-slate-100 bg-slate-50/90'
+                          : 'border-[#d9e6f5] bg-[rgba(231,240,255,0.72)]'
                       )}
                     >
                       <div className="flex gap-3">
-                        <div className="mt-0.5 rounded-xl bg-white p-2 text-primary shadow-[0_8px_18px_rgba(29,79,151,0.10)]">
+                        <div className="mt-0.5 rounded-xl bg-white p-2 text-primary shadow-[0_8px_18px_rgba(17,38,69,0.08)]">
                           {getNotificationIcon(notification.type)}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-[var(--foreground)] truncate">{notification.title}</p>
-                          <p className="mt-1 text-xs leading-5 text-[#5f7da8] line-clamp-2">{notification.message}</p>
-                          <p className="mt-2 text-[11px] font-medium text-[#8ca3c2]">{formatTime(notification.created_at)}</p>
+                          <p className="mt-1 text-xs leading-5 text-[#6b7f95] line-clamp-2">{notification.message}</p>
+                          <p className="mt-2 text-[11px] font-medium text-[#97a7bb]">{formatTime(notification.created_at)}</p>
                         </div>
                       </div>
                     </button>
@@ -245,13 +237,13 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 rounded-full border border-[var(--border)] bg-white/85 px-4 py-2 shadow-[0_12px_28px_rgba(29,79,151,0.08)] backdrop-blur">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dcecff_0%,#bcd9f9_100%)] text-xs font-black uppercase tracking-[0.08em] text-primary shadow-inner">
-            {initials}
+        <div className="flex items-center gap-3 rounded-full border border-[var(--border)] bg-white/90 px-4 py-2">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[linear-gradient(135deg,#eef5ff_0%,#d4e4fb_100%)] text-xs font-black uppercase tracking-[0.08em] text-primary shadow-inner">
+            <ProfileAvatar iconId={user?.profile_icon} name={user?.name} />
           </div>
           <div className="text-right">
             <p className="text-sm font-semibold text-[var(--foreground)]">{user?.name || 'Guest'}</p>
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#7d97ba]">{user?.role || 'visitor'}</p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#8d9db0]">{user?.role || 'visitor'}</p>
           </div>
         </div>
       </div>

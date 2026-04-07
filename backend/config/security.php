@@ -6,5 +6,6 @@ return [
         'credentials' => env('PAGE_GATE_PIN_HASH_CREDENTIALS', ''),
         'monitoring' => env('PAGE_GATE_PIN_HASH_MONITORING', ''),
         'analytics' => env('PAGE_GATE_PIN_HASH_ANALYTICS', ''),
+        'logs' => env('PAGE_GATE_PIN_HASH_LOGS', env('PAGE_GATE_PIN_HASH_ANALYTICS', '')),
     ],
 ];

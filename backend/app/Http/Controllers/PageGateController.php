@@ -12,6 +12,7 @@ class PageGateController extends Controller
             'monitoring' => ['admin', 'technician'],
             'credentials' => ['admin', 'technician'],
             'analytics' => ['admin'],
+            'logs' => ['admin'],
         ];
 
         if (! array_key_exists($page, $allowedRoles)) {

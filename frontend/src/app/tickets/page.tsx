@@ -16,7 +16,7 @@ import {
   Plus,
   Save,
   Ticket,
-  User,
+  User as UserIcon,
   X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +24,8 @@ import api from '@/lib/axios';
 import { useUIStore } from '@/store/ui';
 import { Asset, AssetUnit, Ticket as TicketType } from '@/types';
 import { cn } from '@/lib/utils';
+import PaginationControls from '@/components/ui/PaginationControls';
+import { ProfileAvatar } from '@/components/profile/ProfileAvatar';
 
 // ... (previous imports)
 
@@ -37,6 +39,7 @@ type AssetWithUnits = Asset & {
 };
 
 const statusOptions: TicketStatus[] = ['open', 'in_progress', 'done'];
+const TICKETS_PAGE_SIZE = 8;
 
 function formatTimestamp(value?: string) {
   if (!value) return '-';
@@ -80,6 +83,7 @@ export default function TicketsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [creatingTicket, setCreatingTicket] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [savingTicket, setSavingTicket] = useState(false);
@@ -279,24 +283,64 @@ export default function TicketsPage() {
     done: tickets.filter((ticket) => ticket.status === 'done').length,
   }), [tickets]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredTickets.length / TICKETS_PAGE_SIZE));
+  const paginatedTickets = useMemo(() => {
+    const start = (currentPage - 1) * TICKETS_PAGE_SIZE;
+    return filteredTickets.slice(start, start + TICKETS_PAGE_SIZE);
+  }, [filteredTickets, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Support Tickets</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Support Tickets</h1>
           <p className="text-slate-500">Track issues, see full detail, and update progress in one place.</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[rgba(21,104,187,0.24)] transition-all hover:opacity-90 active:scale-95"
+          className="btn-primary"
         >
           <Plus className="h-4 w-4" />
           New Ticket
         </button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-3xl border border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(244,248,255,0.96)_100%)] p-5 shadow-sm">
+      <section className="hero-minimal">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Tickets</p>
+            <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Issue tracking</h2>
+            <p className="max-w-2xl text-sm text-slate-500">
+              Daftar tiket aktif dengan filter status dan detail progres.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Total</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{ticketSummary.total}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">In Progress</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{ticketSummary.inProgress}</p>
+            </div>
+            <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">Done</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{ticketSummary.done}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-[1.55fr_0.45fr]">
+        <div className="panel-soft p-5">
           <div className="flex items-start gap-3">
             <div className="rounded-2xl bg-[var(--primary-soft)] p-3 text-primary">
               <AlertCircle className="h-5 w-5" />
@@ -304,24 +348,14 @@ export default function TicketsPage() {
             <div className="space-y-1">
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Notification flow</p>
               <p className="text-sm font-semibold text-slate-900">New tickets notify `admin` and `technician` users.</p>
-              <p className="text-sm text-slate-500">Assignment updates notify the assignee and requester. Status/progress updates notify the requester and current assignee. External Telegram/Discord alerts stay active for ticket creation and status changes.</p>
+              <p className="text-sm text-slate-500">Assignment and progress updates notify the requester and active assignee.</p>
             </div>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Total</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.total}</p>
-          </div>
-          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">In progress</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.inProgress}</p>
-          </div>
-          <div className="rounded-3xl border border-[var(--border)] bg-white/88 p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Done</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-900">{ticketSummary.done}</p>
-          </div>
+        <div className="panel-soft flex items-center justify-between p-5 lg:flex-col lg:items-start lg:justify-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Current View</p>
+          <p className="mt-0 text-3xl font-semibold text-slate-900 lg:mt-2">{filteredTickets.length}</p>
         </div>
       </div>
 
@@ -332,10 +366,10 @@ export default function TicketsPage() {
               key={status}
               onClick={() => setStatusFilter(status)}
               className={cn(
-                'rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all',
+                'filter-chip',
                 statusFilter === status
-                  ? 'bg-primary text-white'
-                  : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+                  ? 'filter-chip-active'
+                  : ''
               )}
             >
               {status.replace('_', ' ')}
@@ -344,10 +378,10 @@ export default function TicketsPage() {
         </div>
       </div>
 
-        <div className="overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[28px] border border-[var(--border)] bg-white/96 shadow-[var(--shadow-soft)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <thead className="bg-slate-50/90 text-xs font-bold uppercase tracking-wider text-slate-500">
               <tr>
                 <th className="px-6 py-4">Ticket</th>
                 <th className="px-6 py-4">Status</th>
@@ -367,9 +401,9 @@ export default function TicketsPage() {
                     </td>
                   </tr>
                 ))
-              ) : filteredTickets.length > 0 ? (
-                filteredTickets.map((ticket) => (
-                  <tr key={ticket.id} className="group hover:bg-slate-50 transition-colors">
+              ) : paginatedTickets.length > 0 ? (
+                paginatedTickets.map((ticket) => (
+                  <tr key={ticket.id} className="group transition-colors hover:bg-slate-50/80">
                     <td className="px-6 py-4">
                       <div className="flex max-w-sm flex-col gap-0.5">
                         <span className="font-bold text-foreground truncate">{ticket.title}</span>
@@ -403,8 +437,12 @@ export default function TicketsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500">
-                          <User className="h-4 w-4" />
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-slate-100 text-slate-500">
+                          {ticket.creator?.profile_icon ? (
+                            <ProfileAvatar iconId={ticket.creator.profile_icon} name={ticket.creator.name} />
+                          ) : (
+                            <UserIcon className="h-4 w-4" />
+                          )}
                         </div>
                         <span className="text-xs font-medium text-slate-700">
                           {ticket.creator?.name || 'Unknown'}
@@ -417,7 +455,7 @@ export default function TicketsPage() {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleOpenTicket(ticket.id)}
-                        className="rounded-xl p-2 text-slate-400 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
+                        className="rounded-2xl p-2 text-slate-400 transition-all hover:bg-white hover:text-primary hover:shadow-sm"
                       >
                         <ArrowUpRight className="h-5 w-5" />
                       </button>
@@ -439,6 +477,13 @@ export default function TicketsPage() {
         </div>
       </div>
 
+      <PaginationControls
+        page={currentPage}
+        totalPages={totalPages}
+        totalItems={filteredTickets.length}
+        onPageChange={setCurrentPage}
+      />
+
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -447,13 +492,13 @@ export default function TicketsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-slate-950/35 backdrop-blur-[3px]"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-[var(--border)] bg-white shadow-2xl"
+              className="modal-shell w-full max-w-xl"
               onAnimationStart={() => fetchAssetUnits()}
             >
               <div className="p-8">
@@ -462,7 +507,7 @@ export default function TicketsPage() {
                     <h2 className="text-xl font-bold text-foreground">New Ticket</h2>
                     <p className="text-sm text-slate-500">Report a new issue and attach an image if needed.</p>
                   </div>
-                  <button onClick={() => setShowAddModal(false)} className="rounded-full p-2 hover:bg-slate-100 text-slate-400 transition-colors">
+                  <button onClick={() => setShowAddModal(false)} className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100">
                     <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -474,7 +519,7 @@ export default function TicketsPage() {
                       required
                       value={newTicket.title}
                       onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder="e.g. Internet connection on floor 2 is down"
                     />
                   </div>
@@ -488,7 +533,7 @@ export default function TicketsPage() {
                           type="button"
                           onClick={() => setNewTicket({ ...newTicket, priority })}
                           className={cn(
-                            'flex-1 rounded-xl border py-2 text-[10px] font-black uppercase tracking-wider transition-all',
+                            'flex-1 rounded-2xl border py-2 text-[10px] font-black uppercase tracking-wider transition-all',
                             newTicket.priority === priority
                               ? 'bg-primary border-primary text-white shadow-md shadow-[rgba(21,104,187,0.18)]'
                               : 'bg-white border-slate-100 text-slate-500 hover:bg-slate-50'
@@ -507,14 +552,14 @@ export default function TicketsPage() {
                       rows={4}
                       value={newTicket.description}
                       onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder="Provide detailed context, impact, and symptoms..."
                     />
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Attachment Image</label>
-                    <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+                    <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-[var(--border)] bg-slate-50 px-4 py-3 text-sm text-slate-500">
                       <Paperclip className="h-4 w-4" />
                       <span>{newTicketAttachment?.name || 'Upload screenshot or photo evidence'}</span>
                       <input
@@ -531,7 +576,7 @@ export default function TicketsPage() {
                     <input
                       value={unitSearchTerm}
                       onChange={(e) => setUnitSearchTerm(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-[var(--surface-soft)] p-3 text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                      className="input-shell"
                       placeholder="Search unit name or serial number..."
                     />
                     {unitSearchTerm && !newTicket.asset_unit_id && (
@@ -587,14 +632,14 @@ export default function TicketsPage() {
                     <button
                       type="button"
                       onClick={() => setShowAddModal(false)}
-                      className="flex-1 rounded-xl bg-slate-100 py-3 text-sm font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                      className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-200"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={creatingTicket}
-                      className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-white shadow-lg shadow-[rgba(21,104,187,0.18)] hover:opacity-90 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+                      className="btn-primary flex-1 py-3 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {creatingTicket ? 'Submitting...' : 'Submit Ticket'}
                     </button>
@@ -620,7 +665,7 @@ export default function TicketsPage() {
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 18 }}
-              className="relative max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-2xl"
+              className="modal-shell max-h-[90vh] w-full max-w-6xl"
             >
               <div className="flex items-center justify-between border-b border-slate-100 px-8 py-5">
                 <div>
@@ -663,8 +708,19 @@ export default function TicketsPage() {
                         <div className="mt-6 grid gap-4 sm:grid-cols-2">
                           <div className="rounded-2xl bg-slate-50 p-4">
                             <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Requester</p>
-                            <p className="mt-2 text-sm font-semibold text-slate-900">{selectedTicket.creator?.name || 'Unknown'}</p>
-                            <p className="text-xs text-slate-500">{selectedTicket.creator?.email || '-'}</p>
+                            <div className="mt-2 flex items-center gap-3">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white text-slate-500 shadow-sm">
+                                {selectedTicket.creator?.profile_icon ? (
+                                  <ProfileAvatar iconId={selectedTicket.creator.profile_icon} name={selectedTicket.creator.name} />
+                                ) : (
+                                  <UserIcon className="h-5 w-5" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-slate-900">{selectedTicket.creator?.name || 'Unknown'}</p>
+                                <p className="text-xs text-slate-500">{selectedTicket.creator?.email || '-'}</p>
+                              </div>
+                            </div>
                           </div>
                           <div className="rounded-2xl bg-slate-50 p-4">
                             <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Assigned to</p>

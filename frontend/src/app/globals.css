@@ -3,18 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --background: #edf4ff;
-  --foreground: #0f1f3a;
-  --primary: #1568bb;
+  --background: #f5f7fa;
+  --foreground: #132238;
+  --primary: #1d5fbf;
   --primary-foreground: #ffffff;
   --surface: rgba(255, 255, 255, 0.82);
-  --border: #c7d8ee;
+  --border: #dde5ee;
   --surface-strong: #ffffff;
-  --surface-soft: #f4f8ff;
-  --primary-soft: #dcecff;
-  --primary-muted: #7cb4ea;
-  --primary-deep: #1d4f97;
-  --ring: rgba(21, 104, 187, 0.16);
+  --surface-soft: #f7f9fc;
+  --primary-soft: #edf4ff;
+  --primary-muted: #8ea8cc;
+  --primary-deep: #163f78;
+  --ring: rgba(29, 95, 191, 0.14);
+  --shadow-soft: 0 12px 28px rgba(17, 38, 69, 0.06);
+  --shadow-strong: 0 18px 42px rgba(17, 38, 69, 0.10);
 }
 
 * {
@@ -24,9 +26,8 @@
 body {
   color: var(--foreground);
   background:
-    radial-gradient(circle at top, rgba(112, 175, 238, 0.24) 0%, transparent 34%),
-    radial-gradient(circle at right bottom, rgba(21, 104, 187, 0.12) 0%, transparent 32%),
-    linear-gradient(180deg, #f8fbff 0%, var(--background) 42%, #e5effd 100%);
+    radial-gradient(circle at top left, rgba(120, 164, 225, 0.10) 0%, transparent 30%),
+    linear-gradient(180deg, #fbfcfd 0%, var(--background) 48%, #f0f4f8 100%);
   font-family: var(--font-geist-sans), sans-serif;
 }
 
@@ -47,19 +48,96 @@ body {
 
 @layer components {
   .glass {
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.58);
-    backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(18px);
   }
   
   .card-premium {
-    @apply rounded-[28px] p-6 transition-all backdrop-blur-sm;
-    border: 1px solid rgba(199, 216, 238, 0.88);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(246, 250, 255, 0.92) 100%);
-    box-shadow: 0 24px 60px rgba(25, 66, 128, 0.10);
+    @apply rounded-[28px] p-6 transition-all;
+    border: 1px solid rgba(216, 226, 238, 0.95);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--shadow-soft);
   }
 
   .card-premium:hover {
-    box-shadow: 0 28px 70px rgba(25, 66, 128, 0.14);
+    box-shadow: var(--shadow-strong);
+  }
+
+  .panel-soft {
+    @apply rounded-[24px] border;
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .input-shell {
+    @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-all;
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--foreground);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .input-shell::placeholder {
+    color: #8fa0b6;
+  }
+
+  .input-shell:focus {
+    border-color: rgba(29, 95, 191, 0.46);
+    box-shadow: 0 0 0 4px var(--ring);
+    background: white;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold text-white transition-all;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+    box-shadow: 0 14px 30px rgba(29, 95, 191, 0.22);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(29, 95, 191, 0.26);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold text-slate-600 transition-all;
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  .btn-secondary:hover {
+    @apply bg-white text-slate-900;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .filter-chip {
+    @apply rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all;
+    border-color: var(--border);
+    background: rgba(255, 255, 255, 0.78);
+    color: #5d7088;
+  }
+
+  .filter-chip:hover {
+    @apply bg-white text-slate-900;
+  }
+
+  .filter-chip-active {
+    @apply border-transparent text-white;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+    box-shadow: 0 12px 28px rgba(29, 95, 191, 0.18);
+  }
+
+  .modal-shell {
+    @apply relative overflow-hidden rounded-[32px] border bg-white;
+    border-color: rgba(216, 226, 238, 0.95);
+    box-shadow: 0 32px 80px rgba(15, 31, 58, 0.18);
+  }
+
+  .hero-minimal {
+    @apply rounded-[28px] border p-5;
+    border-color: var(--border);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 250, 252, 0.94) 100%);
+    box-shadow: var(--shadow-soft);
   }
 }
