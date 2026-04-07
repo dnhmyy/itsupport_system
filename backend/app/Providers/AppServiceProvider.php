@@ -33,11 +33,21 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('sensitive-actions', function (Request $request) {
-            return Limit::perMinute(5)
+            return Limit::perMinute(3)
                 ->by((string) optional($request->user())->id.'|'.$request->ip())
                 ->response(function () {
                     return response()->json([
                         'message' => 'Too many sensitive requests. Please wait a moment and try again.',
+                    ], 429);
+                });
+        });
+
+        RateLimiter::for('write-actions', function (Request $request) {
+            return Limit::perMinute(30)
+                ->by((string) optional($request->user())->id.'|'.$request->ip())
+                ->response(function () {
+                    return response()->json([
+                        'message' => 'Too many write requests. Please slow down and try again.',
                     ], 429);
                 });
         });
@@ -53,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('monitoring-check', function (Request $request) {
-            return Limit::perMinute(10)
+            return Limit::perMinute(5)
                 ->by((string) optional($request->user())->id.'|'.$request->ip())
                 ->response(function () {
                     return response()->json([

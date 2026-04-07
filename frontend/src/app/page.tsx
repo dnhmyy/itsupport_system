@@ -15,7 +15,6 @@ import {
   Ticket,
   Waypoints,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import api from '@/lib/axios';
 import { useUIStore } from '@/store/ui';
 import { MonitoringHost, Ticket as TicketType, AssetUnit } from '@/types';
@@ -43,11 +42,10 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const t = Date.now();
         const [hostsRes, assetsRes, ticketsRes] = await Promise.allSettled([
-          api.get(`/monitoring?t=${t}`),
-          api.get(`/asset-units?t=${t}`),
-          api.get(`/tickets?t=${t}`),
+          api.get('/monitoring'),
+          api.get('/asset-units'),
+          api.get('/tickets'),
         ]);
 
         if (hostsRes.status === 'fulfilled') {
@@ -326,12 +324,9 @@ export default function DashboardPage() {
       </section>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {statCards.map((stat, i) => (
-          <motion.div
+        {statCards.map((stat) => (
+          <div
             key={`${stat.label}-mini`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
             className="panel-soft flex items-start justify-between p-5"
           >
             <div>
@@ -342,7 +337,7 @@ export default function DashboardPage() {
             <div className={`rounded-[20px] p-3 ${stat.bg}`}>
               <stat.icon className={`h-6 w-6 ${stat.tone}`} />
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -359,17 +354,14 @@ export default function DashboardPage() {
           <div className="flex flex-1 flex-col pr-1">
             <div className="flex-1">
               <div className="grid grid-cols-5 gap-3">
-              {hostTypeBars.map((item, index) => {
+              {hostTypeBars.map((item) => {
                 const barBase = Math.max(...hostTypeBars.map((bar) => bar.total), 1);
                 const totalHeight = `${Math.max((item.total / barBase) * 110, item.total > 0 ? 18 : 8)}px`;
                 const downHeight = `${Math.max((item.down / barBase) * 110, item.down > 0 ? 16 : 8)}px`;
 
                 return (
-                  <motion.div
+                  <div
                     key={item.key}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 * index }}
                     className="flex flex-col items-center"
                   >
                     <div className="flex h-[140px] w-full items-end justify-center gap-2 overflow-hidden rounded-[20px] bg-[var(--surface-soft)] px-2 pb-4 pt-4">
@@ -378,7 +370,7 @@ export default function DashboardPage() {
                     </div>
                     <p className="mt-3 text-sm font-medium text-slate-700">{item.label}</p>
                     <p className="mt-1 text-xs text-slate-400">{item.total} / {item.down}</p>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -463,12 +455,9 @@ export default function DashboardPage() {
           <div className="flex-1 pr-1">
             <div className="space-y-2">
               {recentTickets.length > 0 ? (
-                recentTickets.map((ticket: TicketType, i: number) => (
-                  <motion.div
+                recentTickets.map((ticket: TicketType) => (
+                  <div
                     key={ticket.id}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
                     className="flex items-center gap-3 rounded-[16px] border border-[var(--border)] bg-slate-50 px-3 py-1.5 transition-all hover:bg-white hover:shadow-md"
                   >
                     <div
@@ -499,7 +488,7 @@ export default function DashboardPage() {
                         {ticket.status.replace('_', ' ')}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               ) : (
                 <div className="flex h-full min-h-0 flex-col items-center justify-center text-slate-400">
