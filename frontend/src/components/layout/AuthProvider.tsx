@@ -13,8 +13,8 @@ const ROLE_ACCESS_MAP: Record<string, string[]> = {
   '/logs': ['admin'],
 };
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { checkAuth, isAuthenticated, user, authChecked } = useAuthStore();
+export default function AuthProvider({ children, hasAuthCookie }: { children: React.ReactNode; hasAuthCookie: boolean }) {
+  const { checkAuth, clearAuth, isAuthenticated, user, authChecked } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
   const initializedRef = useRef(false);
@@ -28,8 +28,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     initializedRef.current = true;
+
+    if (!hasAuthCookie) {
+      clearAuth();
+      return;
+    }
+
     void checkAuth();
-  }, [checkAuth]);
+  }, [checkAuth, clearAuth, hasAuthCookie]);
 
   useEffect(() => {
     if (!authChecked) {

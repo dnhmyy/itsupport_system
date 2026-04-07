@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -39,15 +40,19 @@ export const metadata: Metadata = {
 import AuthProvider from "@/components/layout/AuthProvider";
 import SidebarWrapper from "@/components/layout/SidebarWrapper";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const authCookieName = process.env.AUTH_COOKIE_NAME || 'itsupport_access_token';
+  const hasAuthCookie = cookieStore.has(authCookieName);
+
   return (
     <html lang="id">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
-        <AuthProvider>
+        <AuthProvider hasAuthCookie={hasAuthCookie}>
           <SidebarWrapper>
             {children}
           </SidebarWrapper>
