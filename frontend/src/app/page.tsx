@@ -82,13 +82,12 @@ export default function DashboardPage() {
       }
     };
 
-    let interval: NodeJS.Timeout;
-
+    const interval = setInterval(fetchDashboardData, 30000); // 30s auto-sync
     fetchDashboardData();
-    interval = setInterval(fetchDashboardData, 30000); // 30s auto-sync
+
     window.addEventListener('focus', fetchDashboardData);
     return () => {
-      if (interval) clearInterval(interval);
+      clearInterval(interval);
       window.removeEventListener('focus', fetchDashboardData);
     };
   }, []);
