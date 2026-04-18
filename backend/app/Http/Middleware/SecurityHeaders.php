@@ -21,7 +21,7 @@ class SecurityHeaders
         $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
         $response->headers->set('Origin-Agent-Cluster', '?1');
-        $response->headers->set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
+        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'");
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         $response->headers->set('Pragma', 'no-cache');
 

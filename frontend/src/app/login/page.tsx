@@ -108,11 +108,13 @@ export default function LoginPage() {
                     <Mail className="h-4.5 w-4.5 text-[#7d97ba] group-focus-within:text-primary" />
                     <input
                       type="email"
+                      name="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full bg-transparent text-[15px] text-[var(--foreground)] outline-none placeholder:text-[#8ca3c2]"
                       placeholder="Masukan Email"
+                      autoComplete="email"
                     />
                   </span>
                 </label>
@@ -125,11 +127,13 @@ export default function LoginPage() {
                     <Lock className="h-4.5 w-4.5 text-[#7d97ba] group-focus-within:text-primary" />
                     <input
                       type={showPassword ? 'text' : 'password'}
+                      name="password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full bg-transparent text-[15px] text-[var(--foreground)] outline-none placeholder:text-[#8ca3c2]"
                       placeholder="Masukkan Password"
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"

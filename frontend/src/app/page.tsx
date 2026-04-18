@@ -48,6 +48,16 @@ export default function DashboardPage() {
           api.get('/tickets'),
         ]);
 
+        // If any of them return 401/403, we should probably stop polling
+        const isUnauthorized = [hostsRes, assetsRes, ticketsRes].some(
+          res => res.status === 'rejected' && (res.reason?.response?.status === 401 || res.reason?.response?.status === 403)
+        );
+
+        if (isUnauthorized) {
+          if (interval) clearInterval(interval);
+          return;
+        }
+
         if (hostsRes.status === 'fulfilled') {
           setAllHosts(hostsRes.value.data);
         } else {
@@ -72,11 +82,13 @@ export default function DashboardPage() {
       }
     };
 
+    let interval: NodeJS.Timeout;
+
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 30000); // 30s auto-sync
+    interval = setInterval(fetchDashboardData, 30000); // 30s auto-sync
     window.addEventListener('focus', fetchDashboardData);
     return () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
       window.removeEventListener('focus', fetchDashboardData);
     };
   }, []);
